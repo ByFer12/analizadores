@@ -1,0 +1,71 @@
+# Compiled output
+target/
+build/
+classes/
+
+# IDE specific
+.nb-gradle/
+nb-gradle/
+nbactions.xml
+.nb-configuration.xml
+.nb-gradle.xml
+.nbattrs
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# macOS specific files
+.DS_Store
+
+# Ubuntu specific files
+Thumbs.db
+
+# IntelliJ IDEA specific files
+.idea/
+*.iml
+*.iws
+
+# NetBeans specific files
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+
+# Maven specific files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+s
+# Compiled class files
+*.class
+
+# Compiled module files
+*.jar
+
+# Compiled dynamic libraries
+*.so
+
+# Gradle specific files
+gradle-wrapper.jar
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
