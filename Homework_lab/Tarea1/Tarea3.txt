@@ -1,0 +1,14 @@
+imagen de perfil
+considere el siguiente lenguaje:
+L={a^i b^j c^k | i=j o j=k}
+proporcione una gramatica dependiente de contexto:
+
+
+P = {
+  S -> aA | bB | cC
+  A -> aA | ε
+  B -> bB | ε
+  C -> cC | ε
+}
+
+S = símbolo inicial
