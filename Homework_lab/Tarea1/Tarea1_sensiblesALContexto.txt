@@ -1,0 +1,24 @@
+PRIMERA TAREA:
+	1) validar aabbcc
+	La cadena "aabbcc" tiene dos 'a's, seguidos por dos 'b's y luego dos 'c's.
+    	En este caso, n es igual a 2 para 'a', 'b' y 'c'.
+    	La cadena sigue el patrón de a^n b^n c^n, ya que n es igual para todas las letras.
+    	"aabbcc" sí es una cadena válida para el lenguaje L.
+    	Ejemplo si tuvieramos la siguiente gramatica:
+	
+	S -> aa
+	aa -> aa bb
+	aa bb -> aabbcc
+	
+	2) validar aaabbbccc
+	Validación de "aaabbbccc":
+
+	La cadena "aaabbbccc" tiene tres 'a's, seguidos por tres 'b's y luego tres 'c's.
+	En este caso, n es igual a 3 para 'a', 'b' y 'c'.
+	La cadena sigue el patrón de a^n b^n c^n, ya que n es igual para todas las letras.
+	"aaabbbccc" también es una cadena válida para el lenguaje L.
+	
+	Ejemplo si tuviesemos la siguiente gramatica: 
+	S -> aa
+	aa -> aa aa
+	aa aa -> aaabbbccc
