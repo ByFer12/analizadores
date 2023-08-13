@@ -60,4 +60,10 @@ public class Token {
         this.columna = columna;
     }
     
+    
+    public String infor(){
+        String info="Lexema: "+lexema+" Tipo de token: "+token+" Fila: "+fila+" Columna: "+columna;
+        return info;
+    }
+    
 }

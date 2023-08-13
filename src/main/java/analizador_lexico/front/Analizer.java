@@ -4,6 +4,7 @@
  */
 package analizador_lexico.front;
 
+import analizador_lexico.analyzer.Analizador;
 import analizador_lexico.utils.Archive;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -24,9 +25,7 @@ import javax.swing.text.BadLocationException;
  */
 public class Analizer extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Analizer
-     */
+    Analizador analizador;
     JLabel position;
     JLabel lineNumberLabel;
     Font font = new Font("Liberation Sans", Font.BOLD, 18);
@@ -42,6 +41,7 @@ public class Analizer extends javax.swing.JFrame {
         archivo=new Archive();
         archivo.setPath(path_file);
         file=new JFileChooser();
+        analizador=new Analizador();
         
     }
 
@@ -93,6 +93,11 @@ public class Analizer extends javax.swing.JFrame {
 
         run.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         run.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/play.png")); // NOI18N
+        run.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runActionPerformed(evt);
+            }
+        });
 
         table_error_tokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -422,6 +427,12 @@ public class Analizer extends javax.swing.JFrame {
     private void go_graphicsMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_go_graphicsMenuSelected
          tobbe1.setSelectedIndex(1);
     }//GEN-LAST:event_go_graphicsMenuSelected
+
+    private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
+       String textCode=area_code.getText();
+        analizador.analizar(textCode);
+
+    }//GEN-LAST:event_runActionPerformed
 
 
 private void updateLineNumbersLater() {
