@@ -431,6 +431,7 @@ public class Analizer extends javax.swing.JFrame {
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
        String textCode=area_code.getText();
         analizador.analizar(textCode);
+       
 
     }//GEN-LAST:event_runActionPerformed
 

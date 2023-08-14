@@ -10,23 +10,37 @@ import analizador_lexico.enums.TypeToken;
 public class Token {
     private TypeToken token;
     private String lexema;
+    private String nombre;
     private int fila;
     private int columna;
 
     public Token() {
     }
 
+    public Token(TypeToken token, String lexema, String nombre, int fila, int columna) {
+        this.token = token;
+        this.lexema = lexema;
+        this.nombre = nombre;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    
+    
+
     public Token(TypeToken token, String lexema) {
         this.token = token;
         this.lexema = lexema;
     }
 
-    public Token(TypeToken token, String lexema, int fila, int columna) {
-        this.token = token;
-        this.lexema = lexema;
-        this.fila = fila;
-        this.columna = columna;
+    public String getNombre() {
+        return nombre;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+ 
 
     public TypeToken getToken() {
         return token;
@@ -62,7 +76,7 @@ public class Token {
     
     
     public String infor(){
-        String info="Lexema: "+lexema+" Tipo de token: "+token+" Fila: "+fila+" Columna: "+columna;
+        String info="Lexema: "+lexema+" Tipo de token: "+token+" Nombbre: "+nombre+" Fila: "+fila+" Columna: "+columna;
         return info;
     }
     
