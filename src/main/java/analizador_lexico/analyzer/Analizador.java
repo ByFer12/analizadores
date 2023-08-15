@@ -49,10 +49,10 @@ public class Analizador {
                 }else
 
 //analiza si el caracter anterior o dos anteriores es " entonces termina la lectura y es reconocido como cadena
-                if(lexemaActual.charAt(it-1)==34){
+                if(lexemaActual.charAt(it-1)==34 ||lexemaActual.charAt(it-1)==39){
                     coment=true;
                     //verifica si la posicion cero del lexema actual es comilla asi omite los espacios y sigue verificando 
-                }else if((lexemaActual.charAt(0)==34)){
+                }else if((lexemaActual.charAt(0)==34)|| (lexemaActual.charAt(0)==39)){
                     continue;
                 }
 
