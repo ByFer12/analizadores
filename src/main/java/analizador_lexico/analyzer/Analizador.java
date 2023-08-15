@@ -17,6 +17,7 @@ public class Analizador {
     private Token token;
     public static boolean isEmpty;
     private int row = 1, column = 0;
+    private boolean coment=false;
     public ArrayList<Token> tokens = new ArrayList();
     private String[] OP_ASIGN = {"="};
     private String[] OP_ARIT = {"+", "-", "*", "/", "**", "//", "%"};
@@ -28,6 +29,7 @@ public class Analizador {
         if (input.isEmpty()) {
             isEmpty = true;
         }
+            int it=0;
         for (int i = 0; i < input.length(); i++) {
 
             if (input.charAt(i) == 10) {
@@ -36,13 +38,31 @@ public class Analizador {
             } else {
                 column++;
             }
-            if (!(input.charAt(i) == 10)) {
+            if (!(input.charAt(i) == 10)&&!(input.charAt(i) == 32)) {
                 lexemaActual.append(input.charAt(i));
+                it++;
             }
+           
             if (input.charAt(i) == 32 || (i == input.length() - 1) || input.charAt(i+1) == 10) {
+                if(lexemaActual.length()==0){
+                    continue;
+                }else
+
+//analiza si el caracter anterior o dos anteriores es " entonces termina la lectura y es reconocido como cadena
+                if(lexemaActual.charAt(it-1)==34){
+                    coment=true;
+                    //verifica si la posicion cero del lexema actual es comilla asi omite los espacios y sigue verificando 
+                }else if((lexemaActual.charAt(0)==34)){
+                    continue;
+                }
 
                 String lexer = lexemaActual.toString();
-                if (isIdentificator(lexer)) {
+                //si el caracter anterior es comilla entonces se reconoce el token comentario
+                if(coment){
+                     token = new Token(TypeToken.COMENTARIO, lexer,"Comentario", row, column);
+                    tokens.add(token);
+                    //verifica si es un identificador
+                }else if (isIdentificator(lexer)) {
                     token = new Token(TypeToken.ID, lexer,"Identificador", row, column);
                     tokens.add(token);
 
@@ -52,12 +72,18 @@ public class Analizador {
                 } else if(isDecimal(lexer)){
                     token = new Token(TypeToken.CONST, lexer,"Decimal", row, column);
                     tokens.add(token);
+                }else if(isCadena(lexer)){
+                    token = new Token(TypeToken.CONST, lexer,"Cadena", row, column);
+                    tokens.add(token);
                 }else{
                     System.out.println("No hay tokens");
                 }
                 lexemaActual.setLength(0);
+                it=0;
+                coment=false;
 
             }
+            
 
         }
 
@@ -135,5 +161,11 @@ public class Analizador {
         }
 
         return hasDigits; // Debe haber al menos un dígito
+    }
+    
+    //metodo para reconocer cadenas
+    public boolean isCadena(String lexema){
+        return (lexema.startsWith("\"") && lexema.endsWith("\"")) ||
+               (lexema.startsWith("'") && lexema.endsWith("'"));
     }
 }
