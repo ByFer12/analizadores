@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package analizador_lexico.analyzer;
 
 import analizador_lexico.enums.TypeToken;
@@ -75,7 +72,7 @@ public class Token {
     }
     
     
-    public String infor(){
+    public String info(){
         String info="Lexema: "+lexema+" Tipo de token: "+token+" Nombbre: "+nombre+" Fila: "+fila+" Columna: "+columna;
         return info;
     }

@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package analizador_lexico.analyzer;
 
 import analizador_lexico.enums.TypeToken;
 import java.util.ArrayList;
+import analizador_lexico.analyzer.Token;
 
 /**
  *
@@ -39,7 +37,7 @@ public class Analizador {
             } else {
                 column++;
             }
-            if (!(input.charAt(i) == 10)&&!(input.charAt(i) == 32)) {
+            if (!(input.charAt(i) == 10)) {
                 lexemaActual.append(input.charAt(i));
 
                 it++;
@@ -124,12 +122,12 @@ public class Analizador {
         }
         if (isError) {
             for (Token op : errors) {
-                System.out.println(op.infor());
+                System.out.println(op.info());
             }
 
         } else {
             for (Token op : tokens) {
-                System.out.println(op.infor());
+                System.out.println(op.info());
             }
 
 

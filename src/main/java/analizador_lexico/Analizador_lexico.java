@@ -1,9 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
 
 package analizador_lexico;
 
+import analizador_lexico.analyzer.Token;
+import analizador_lexico.enums.TypeToken;
 import analizador_lexico.front.Analizer;
 
 /**
@@ -16,5 +15,6 @@ public class Analizador_lexico {
         Analizer a = new Analizer();
         a.setVisible(true);
         a.setLocationRelativeTo(null);
+
     }
 }
