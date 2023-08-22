@@ -13,6 +13,7 @@ public enum TypeToken {
     KEY_WORD,
     CONST,
     COMENTARIO,
-    OTROS
+    OTROS,
+    ERRORS
     
 }

@@ -5,18 +5,18 @@
 package analizador_lexico.front;
 
 import analizador_lexico.analyzer.Analizador;
+import analizador_lexico.analyzer.ManejadorPrintTable;
+import analizador_lexico.analyzer.Token;
 import analizador_lexico.utils.Archive;
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.util.Locale;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 
 /**
@@ -34,15 +34,59 @@ public class Analizer extends javax.swing.JFrame {
     private Archive archivo;
     private String texto;
     private JFileChooser file;
+    DefaultTableModel modelTable;
+    ManejadorPrintTable manage;
+    private Analizador analyzer = new Analizador();
+    ArrayList<Token> tokens;
+    ArrayList<Token> errors;
+
+
     public Analizer() {
         initComponents();
         //modifyTextArea();
         lineNumberLabel.setFont(font);
-        archivo=new Archive();
+        archivo = new Archive();
         archivo.setPath(path_file);
-        file=new JFileChooser();
-        analizador=new Analizador();
+        file = new JFileChooser();
+        analizador = new Analizador();
+        modelTable = new DefaultTableModel();
         
+    }
+
+    public void printTable() {
+        
+        boolean isError = Analizador.isError;
+        tokens=Analizador.errors;
+        errors=Analizador.errors;
+
+        if (isError) {
+            this.title.setText("Errores Lexicos");
+            Object[] ob = new Object[5];
+            for (int i = 0; i < errors.size(); i++) {
+                ob[0] = Analizador.errors.get(i).getToken();
+                ob[1] = Analizador.errors.get(i).getNombre();
+                ob[2] = Analizador.errors.get(i).getLexema();
+                ob[3] = Analizador.errors.get(i).getFila();
+                ob[4] = Analizador.errors.get(i).getColumna();
+                modelTable.addRow(ob);
+            }
+            table_error_tokens.setModel(modelTable);
+
+        } else {
+            title.setText("Tokens Reconocidos");
+            Object[] ob = new Object[5];
+            for (int i = 0; i < tokens.size(); i++) {
+                ob[0] = Analizador.tokens.get(i).getToken();
+                ob[1] = Analizador.tokens.get(i).getNombre();
+                ob[2] = Analizador.tokens.get(i).getLexema();
+                ob[3] = Analizador.tokens.get(i).getFila();
+                ob[4] = Analizador.tokens.get(i).getColumna();
+                modelTable.addRow(ob);
+
+            }
+
+            table_error_tokens.setModel(modelTable);
+        }
     }
 
     /**
@@ -65,7 +109,7 @@ public class Analizer extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         area_code = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
+        title = new javax.swing.JLabel();
         btn_Archivo1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         path_file = new javax.swing.JTextField();
@@ -101,16 +145,15 @@ public class Analizer extends javax.swing.JFrame {
 
         table_error_tokens.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Token", "Patron", "Lexema", "Linea", "Columna"
             }
         ));
+        table_error_tokens.setColumnSelectionAllowed(true);
         jScrollPane2.setViewportView(table_error_tokens);
+        table_error_tokens.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -176,7 +219,7 @@ public class Analizer extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, BorderLayout.CENTER);
 
-        jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        title.setFont(new java.awt.Font("Liberation Sans", 1, 23)); // NOI18N
 
         btn_Archivo1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         btn_Archivo1.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/add_archive.png")); // NOI18N
@@ -208,14 +251,17 @@ public class Analizer extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(error_o_tokenLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(257, 257, 257)))
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(199, 199, 199))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -236,16 +282,14 @@ public class Analizer extends javax.swing.JFrame {
                             .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(error_o_tokenLayout.createSequentialGroup()
                                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(4, 4, 4)))
-                                        .addGap(17, 17, 17))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                                         .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(31, 31, 31)))
+                                        .addGap(31, 31, 31))
+                                    .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(21, 21, 21)))
                                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)))
@@ -382,63 +426,64 @@ public class Analizer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_Archivo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Archivo1ActionPerformed
-       this.file = new JFileChooser();
+        this.file = new JFileChooser();
         //FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.TXT",".txt");
         //file.setFileFilter(filtro);
-        int selection =file.showOpenDialog(this);
-        if(selection==JFileChooser.APPROVE_OPTION){
+        int selection = file.showOpenDialog(this);
+        if (selection == JFileChooser.APPROVE_OPTION) {
             archivo.chooseFile(file);
-            texto=archivo.getTexto();
+            texto = archivo.getTexto();
             area_code.setText(texto);
         }
-        
+
         System.out.println(texto);
-        
+
     }//GEN-LAST:event_btn_Archivo1ActionPerformed
 
     private void btn_save_ArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_ArchivoActionPerformed
         this.file = new JFileChooser();
         //FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.TXT",".txt");
         //file.setFileFilter(filtro);
-        int selection =file.showSaveDialog(this);
-        if(selection==JFileChooser.APPROVE_OPTION){
+        int selection = file.showSaveDialog(this);
+        if (selection == JFileChooser.APPROVE_OPTION) {
             archivo.setArea(area_code);
             archivo.saveFile(file);
         }
-        
+
     }//GEN-LAST:event_btn_save_ArchivoActionPerformed
 
     private void go_analizerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_go_analizerActionPerformed
-      //  tobbe1.setSelectedIndex(1);
+        //  tobbe1.setSelectedIndex(1);
     }//GEN-LAST:event_go_analizerActionPerformed
 
     private void jMenu4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu4ActionPerformed
-       tobbe1.setSelectedIndex(0);
+        tobbe1.setSelectedIndex(0);
     }//GEN-LAST:event_jMenu4ActionPerformed
 
     private void jMenu4MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu4MenuSelected
-         tobbe1.setSelectedIndex(2);
+        tobbe1.setSelectedIndex(2);
     }//GEN-LAST:event_jMenu4MenuSelected
 
     private void go_analizerMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_go_analizerMenuSelected
-         tobbe1.setSelectedIndex(0);
+        tobbe1.setSelectedIndex(0);
     }//GEN-LAST:event_go_analizerMenuSelected
 
     private void go_graphicsMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_go_graphicsMenuSelected
-         tobbe1.setSelectedIndex(1);
+        tobbe1.setSelectedIndex(1);
     }//GEN-LAST:event_go_graphicsMenuSelected
 
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
-       String textCode=area_code.getText();
+        String textCode = area_code.getText();
         analizador.analizar(textCode);
-       
+        printTable();
+
 
     }//GEN-LAST:event_runActionPerformed
 
-
-private void updateLineNumbersLater() {
+    private void updateLineNumbersLater() {
         SwingUtilities.invokeLater(this::updateLineNumbers);
     }
+
     private void updateCursorPositionLater() {
         SwingUtilities.invokeLater(this::updateCursorPosition);
     }
@@ -453,7 +498,8 @@ private void updateLineNumbersLater() {
             e.printStackTrace();
         }
     }
-     private void updateCursorPosition() {
+
+    private void updateCursorPosition() {
         try {
             int caretPosition = area_code.getCaretPosition();
             lineNumber = area_code.getLineOfOffset(caretPosition) + 1;
@@ -464,6 +510,7 @@ private void updateLineNumbersLater() {
             e.printStackTrace();
         }
     }
+
     private String getLineNumberText(int totalLines) {
         StringBuilder numbersText = new StringBuilder();
         for (int i = 1; i <= totalLines; i++) {
@@ -471,7 +518,6 @@ private void updateLineNumbersLater() {
         }
         return "<html>" + numbersText.toString() + "</html>";
     }
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -482,7 +528,6 @@ private void updateLineNumbersLater() {
     private javax.swing.JMenu go_analizer;
     private javax.swing.JMenu go_graphics;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu3;
@@ -498,6 +543,7 @@ private void updateLineNumbersLater() {
     private javax.swing.JTextField path_file;
     private javax.swing.JButton run;
     private javax.swing.JTable table_error_tokens;
+    public javax.swing.JLabel title;
     private javax.swing.JTabbedPane tobbe1;
     // End of variables declaration//GEN-END:variables
 }
