@@ -4,15 +4,16 @@
  */
 package analizador_lexico.utils;
 
+import java.io.IOException;
 import javax.swing.JFileChooser;
 
 
 public interface IArchive {
     
     
-    void chooseFile(JFileChooser file);
+    String chooseFile(String filePath)throws IOException;
     
-    void saveFile(JFileChooser file);
+    void saveFile(String filePath, String content) throws IOException;
     
     
 }

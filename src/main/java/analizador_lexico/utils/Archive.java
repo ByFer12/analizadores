@@ -4,6 +4,8 @@
  */
 package analizador_lexico.utils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -47,33 +49,23 @@ public class Archive implements IArchive{
     }
 
     @Override
-    public void chooseFile(JFileChooser file) {
-        File fichero=file.getSelectedFile();
-        path.setText(fichero.getAbsolutePath());
-        
-        try(FileReader read = new FileReader(fichero)){
-            int valor =read.read();
-            while(valor!=-1){
-                texto+=(char)valor;
-                valor=read.read();
-            }
-            
-        }catch(IOException e){
-            JOptionPane.showMessageDialog(null, "Error al abrir el archivo");
-            
-        }    
+    public String chooseFile(String filePath)throws IOException{
+       StringBuilder content = new StringBuilder();
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            content.append(line).append("\n");
+        }
+    }
+    return content.toString();
         
     }
 
     @Override
-    public void saveFile(JFileChooser file) {
-       File fichero=file.getSelectedFile();
-       try(FileWriter write = new FileWriter(fichero)){
-           write.write(area.getText());
-       }catch(IOException e){
-           JOptionPane.showMessageDialog(null, "Error al guardar el archivo");
-       }
-       area.setText("");
+    public void saveFile(String filePath, String content) throws IOException{
+          try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+        writer.write(content);
+    }
     }
     
 }

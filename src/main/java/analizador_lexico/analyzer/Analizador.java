@@ -1,4 +1,3 @@
-
 package analizador_lexico.analyzer;
 
 import analizador_lexico.enums.TypeToken;
@@ -18,9 +17,11 @@ public class Analizador {
     private int row = 1, column = 0;
     private boolean caden = false, coment = false;
     public static ArrayList<Token> tokens = new ArrayList();
-    public static ArrayList<Token> errors = new ArrayList();
-    private String[] keysWords = {"and ", "not", "or", "True", "False", "and", "as", "assert", "break", "class", "continue", "def ", "del", "elif", "else", "except", "finally", "for ", "from", "global", "if ", "import", "i", "is", "lamda", "None", "nonlocal", "pass", "raise", "return", "try", "while ", "with", "yield"};
+    //public static ArrayList<Token> errors = new ArrayList();
+    private String[] keysWords = {"and", "not", "or", "True", "False", "and", "as", "assert", "break", "class", "continue", "def ", "del", "elif", "else", "except", "finally", "for", "from", "global", "if ", "import", "i", "is", "lamda", "None", "nonlocal", "pass", "raise", "return", "try", "while", "with", "yield"};
     private String[] others = {")", "( ", ": ", "; ", ", ", ". ", "{ ", "} ", "[ ", "] "};
+    private String[] op_comp = {"==", ">=", "<=", ">", "<", "!="};
+
     public static boolean isError = false;
 
     public void analizar(String input) {
@@ -37,43 +38,58 @@ public class Analizador {
             } else {
                 column++;
             }
-            if (!(input.charAt(i) == 10)) {
-                lexemaActual.append(input.charAt(i));
-
-                it++;
-            }
+            //if (!(input.charAt(i) == 10)) {
+            lexemaActual.append(input.charAt(i));
+            it++;
 
             //validar para clasificar tokens
             if (input.charAt(i) == 32 || (i == input.length() - 1) || input.charAt(i + 1) == 10) {
                 try {
-                    if (lexemaActual.length() == 0) {
-                        continue;
-                    } else if ((lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39) && input.charAt(i) == 32) {
-                        if ((lexemaActual.charAt(it - 1) == 34 || lexemaActual.charAt(it - 1) == 39) && (lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39)) {
-                            caden = true;
+                    if ((lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39) || lexemaActual.toString().startsWith("\n") && (input.charAt(i) == 32|| input.charAt(i+2 ) == 10)) {
+                        if (lexemaActual.toString().startsWith("\n")) {
 
-                        } else if ((lexemaActual.charAt(it - 2) == 34 || lexemaActual.charAt(it - 2) == 39) && (lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39)) {
-                            caden = true;
+                            if ((lexemaActual.charAt(it - 1) == 34 || lexemaActual.charAt(it - 1) == 39) && (lexemaActual.charAt(1) == 34 || lexemaActual.charAt(1) == 39)) {
+                                caden = true;
 
+                            } else if ((lexemaActual.charAt(it - 2) == 34 || lexemaActual.charAt(it - 2) == 39) && (lexemaActual.charAt(1) == 34 || lexemaActual.charAt(1) == 39)) {
+                                caden = true;
+
+                            } else {
+                                continue;
+                            }
                         } else {
-                            continue;
+                            if ((lexemaActual.charAt(it - 1) == 34 || lexemaActual.charAt(it - 1) == 39) && (lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39)) {
+                                caden = true;
+
+                            } else if ((lexemaActual.charAt(it - 2) == 34 || lexemaActual.charAt(it - 2) == 39) && (lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39)) {
+                                caden = true;
+
+                            } else {
+                                continue;
+                            }
+
                         }
                     } else if ((lexemaActual.charAt(it - 1) == 34 || lexemaActual.charAt(it - 1) == 39) && (lexemaActual.charAt(0) == 34 || lexemaActual.charAt(0) == 39)) {
                         caden = true;
 
-                    } else if ((i == input.length() - 1 || input.charAt(i + 1) == 10) && lexemaActual.charAt(0) == 35) {
-                        coment = true;
+                    } else if ((i == input.length() - 1 || input.charAt(i + 1) == 10) && (lexemaActual.charAt(0) == 35 || lexemaActual.toString().startsWith("\n"))) {
+                        if (lexemaActual.toString().startsWith("\n") && lexemaActual.charAt(1) == 35) {
+
+                            coment = true;
+                        } else if (!lexemaActual.toString().startsWith("\n") && lexemaActual.charAt(0) == 35) {
+                            coment = true;
+                        }
                     } else if (lexemaActual.charAt(0) == 35) {
                         continue;
 
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    System.out.println("Error");
+                    System.out.println("Except");
                 }
 
                 String lexer = lexemaActual.toString();
                 if (coment) {
-                    token = new Token(TypeToken.CONST, lexer, "Comentario", row, column);
+                    token = new Token(TypeToken.COMENTARIO, lexer, "Comentario", row, column);
                     tokens.add(token);
                 } else //si el caracter anterior es comilla entonces se reconoce el token comentario
                 if (caden) {
@@ -106,9 +122,13 @@ public class Analizador {
                     token = new Token(TypeToken.OTROS, lexer, "Otros", row, column);
                     tokens.add(token);
 
+                } else if (opAsign(lexer)) {
+                    token = new Token(TypeToken.OP_ASIGN, lexer, "Operador Asignacion", row, column);
+                    tokens.add(token);
+
                 } else {
                     token = new Token(TypeToken.ERRORS, lexer, "Error", row, column);
-                    errors.add(token);
+                    tokens.add(token);
                     isError = true;
 
                 }
@@ -121,15 +141,22 @@ public class Analizador {
 
         }
         if (isError) {
-            for (Token op : errors) {
-                System.out.println(op.info());
+            for (int i = 0; i < tokens.size(); i++) {
+
+                if (tokens.get(i).getToken() == TypeToken.ERRORS) {
+                    System.out.println(tokens.get(i).info());
+                }
+
             }
 
         } else {
-            for (Token op : tokens) {
-                System.out.println(op.info());
-            }
+            for (int i = 0; i < tokens.size(); i++) {
 
+                if (tokens.get(i).getToken() != TypeToken.ERRORS) {
+
+                    System.out.println(tokens.get(i).info());
+                }
+            }
 
         }
     }
@@ -140,14 +167,6 @@ public class Analizador {
 
     public void setTokens(ArrayList<Token> tokens) {
         this.tokens = tokens;
-    }
-
-    public ArrayList<Token> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(ArrayList<Token> errors) {
-        this.errors = errors;
     }
 
     public boolean isIsError() {
@@ -164,13 +183,13 @@ public class Analizador {
             return false;
         }
         char letter = lexema.charAt(0);
-        if (!isLetter(letter) && letter != 95) {
+        if ((!isLetter(letter) && letter != 95 && letter != 10) && (!isLetter(letter) && letter != 95)) {
             return false;
         }
 
-        for (int i = 1; i < lexema.length() - 1; i++) {
+        for (int i = 1; i < lexema.length(); i++) {
             char letr = lexema.charAt(i);
-            if (!isLetter(letr) && !isDigit(letr) && letr != 95) {
+            if (!isLetter(letr) && !isDigit(letr) && letr != 95 && (lexema.charAt(lexema.length() - 1) != 32)) {
                 return false;
             }
         }
@@ -178,11 +197,16 @@ public class Analizador {
         return true;
     }
 
-    public boolean isKeyWord(String lexer) {
+    public boolean isKeyWord(String lexer){
+        int leng = lexer.length();
         for (String key : keysWords) {
-            if (key.equals(lexer)) {
+            if ((lexer.substring(1, leng).equals(key))) {
                 return true;
 
+            } else if ((lexer.equals(key))) {
+                return true;
+            } else if ((lexer.substring(0, leng - 1).equals(key))) {
+                return true;
             }
         }
 
@@ -200,13 +224,13 @@ public class Analizador {
     }
 
     public static boolean opAritmetico(String c) {
-        if (c.equals("** ")) {
+        if (c.equals("**")) {
             return true;
-        } else if (c.equals("// ")) {
+        } else if (c.equals("//")) {
             return true;
-        } else if (c.equals("* ")) {
+        } else if (c.equals("*")) {
             return true;
-        } else if (c.equals("/ ")) {
+        } else if (c.equals("/")) {
             return true;
         } else if (c.equals("+ ")) {
             return true;
@@ -244,21 +268,20 @@ public class Analizador {
         return true;
     }
 
-    public boolean opComparacion(String c) {
-        if (c.equals("<")) {
-            return true;
-        } else if (c.equals(">")) {
-            return true;
-        } else if (c.equals("=")) {
-            return true;
+    public boolean opComparacion(String lexer) {
+        int leng = lexer.length();
+        for (String opC : op_comp) {
+            if ((lexer.substring(1, leng).equals(opC)) || (lexer.equals(opC)) || (lexer.substring(0, leng - 1).equals(opC))) {
+                return true;
+            }
+        }
 
-        } else if (c.equals("!=")) {
-            return true;
+        return false;
+    }
 
-        } else if (c.equals(">=")) {
-            return true;
+    public boolean opAsign(String c) {
+        if (c.equals("=")) {
 
-        } else if (c.equals("<=")) {
             return true;
         }
 
@@ -287,8 +310,5 @@ public class Analizador {
 
         return hasDigits; // Debe haber al menos un dígito
     }
-
-    
-
 
 }

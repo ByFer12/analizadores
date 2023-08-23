@@ -11,4 +11,12 @@
         <maven.compiler.target>19</maven.compiler.target>
         <exec.mainClass>analizador_lexico.Analizador_lexico</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java</artifactId>
+            <version>0.18.1</version>
+        </dependency>
+    </dependencies>
+
 </project>
