@@ -11,6 +11,7 @@
         <maven.compiler.target>19</maven.compiler.target>
         <exec.mainClass>analizador_lexico.Analizador_lexico</exec.mainClass>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>guru.nidi</groupId>
@@ -18,5 +19,25 @@
             <version>0.18.1</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>analizador_lexico.Analizador_lexico</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+   
 
 </project>

@@ -283,6 +283,13 @@ public class Analizador {
         if (c.equals("=")) {
 
             return true;
+        }else if(c.equals("\n=")){
+            return true;
+            
+        }else if(c.equals("= ")){
+            return true;
+        }else if(c.equals("\n= ")){
+            return true;
         }
 
         return false;
