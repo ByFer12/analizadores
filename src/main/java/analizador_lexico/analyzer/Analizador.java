@@ -22,21 +22,27 @@ public class Analizador {
     String opComp = "==|!=|>|<|>=|<=";
     String opAsig = "=";
     String otros = "\\(|\\)|\\{|\\}|\\[|\\]|,|;|:";
+    String indentacion = "^\\s+";
     String keyWord = "\\b(if|else|for|while|and|as|assert|break|class|continue|def|del|elif|except|False|finally|from|global|import|in|is|lambda|None|nonlocal|not|or|pass|raise|return|True|try|with|yield)\\b";
 
     String expCompleto = "(" + id + "|" + numero + "|" + "|" + comentario + "|" + cadena
-            + decimal + "|" + opArit + "|" + "|" + opComp + "|" + opAsig
+            + decimal + "|" + opArit + "|" + "|" + opComp + "|" + opAsig+"|"+indentacion
             + otros + "|" + keyWord + ")";
     Pattern patron = Pattern.compile(expCompleto);
 
     public static boolean isError = false;
+    int fila=1;
+    int col=1;
 
     public void analizar(String input) {
         Matcher analizar=patron.matcher(input);
+        
         while(analizar.find()){
+            
             String lexema=analizar.group();
+            
             if(lexema.contains(id)){
-                token=new Token(TypeToken.CONST, lexema, numero, 0, 0);
+                token=new Token(TypeToken.ID, lexema, numero, 0, 0);
             }
         }
         
