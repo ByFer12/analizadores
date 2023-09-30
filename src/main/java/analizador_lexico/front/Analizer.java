@@ -49,13 +49,12 @@ public class Analizer extends javax.swing.JFrame {
         modelTable.addColumn("Lexema");
         modelTable.addColumn("Linea");
         modelTable.addColumn("Columna");
-
     }
 
     public void printTable() {
 
         boolean isError = Analizador.isError;
-        tokens = Analizador.tokens;
+//        tokens = Analizador.tokens;
         //errors=Analizador.errors;
 
         if (isError) {
@@ -101,37 +100,37 @@ public class Analizer extends javax.swing.JFrame {
         }
     }
 
-    public void pintar() {
-        StyledDocument doc = area_code.getStyledDocument();
-        SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
-        for (Token tk : tokens) {
-            SimpleAttributeSet estilo = new SimpleAttributeSet();
-            if ((tk.getToken() == TypeToken.OP_ARITMETIC) || (tk.getToken() == TypeToken.OP_COMPARACION)||(tk.getToken() == TypeToken.OP_ASIGN)) {
-                StyleConstants.setForeground(estilo, Color.CYAN);
-
-            }else if(tk.getToken()==TypeToken.KEY_WORD){
-                StyleConstants.setForeground(estilo, Color.magenta);
-            }else if(tk.getToken()==TypeToken.CONST){
-                StyleConstants.setForeground(estilo, Color.ORANGE);
-            }else if(tk.getToken()==TypeToken.COMENTARIO){
-                StyleConstants.setForeground(estilo, Color.GRAY);
-                
-            }else if(tk.getToken()==TypeToken.OTROS){
-                StyleConstants.setForeground(estilo, Color.green);
-            }else if(tk.getToken()==TypeToken.ID){
-                StyleConstants.setForeground(estilo, Color.BLACK);
-            }else if(tk.getToken()==TypeToken.ERRORS){
-                 StyleConstants.setForeground(estilo, Color.red);
-            }
-            try {
-                doc.insertString(doc.getLength(), tk.getLexema() + " ", estilo);
-
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
+//    public void pintar() {
+//        StyledDocument doc = area_code.getStyledDocument();
+//        SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
+//        for (Token tk : tokens) {
+//            SimpleAttributeSet estilo = new SimpleAttributeSet();
+//            if ((tk.getToken() == TypeToken.OP_ARITMETIC) || (tk.getToken() == TypeToken.OP_COMPARACION)||(tk.getToken() == TypeToken.OP_ASIGN)) {
+//                StyleConstants.setForeground(estilo, Color.CYAN);
+//
+//            }else if(tk.getToken()==TypeToken.KEY_WORD){
+//                StyleConstants.setForeground(estilo, Color.magenta);
+//            }else if(tk.getToken()==TypeToken.CONST){
+//                StyleConstants.setForeground(estilo, Color.ORANGE);
+//            }else if(tk.getToken()==TypeToken.COMENTARIO){
+//                StyleConstants.setForeground(estilo, Color.GRAY);
+//                
+//            }else if(tk.getToken()==TypeToken.OTROS){
+//                StyleConstants.setForeground(estilo, Color.green);
+//            }else if(tk.getToken()==TypeToken.ID){
+//                StyleConstants.setForeground(estilo, Color.BLACK);
+//            }else if(tk.getToken()==TypeToken.ERRORS){
+//                 StyleConstants.setForeground(estilo, Color.red);
+//            }
+//            try {
+//                doc.insertString(doc.getLength(), tk.getLexema() + " ", estilo);
+//
+//            } catch (BadLocationException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -542,11 +541,11 @@ public class Analizer extends javax.swing.JFrame {
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
         String textCode = area_code.getText();
         analizador.analizar(textCode);
-        limpiar();
-        printTable();
-        area_code.setText("");
-        pintar();
-        tokens.clear();
+        //limpiar();
+        //printTable();
+        //area_code.setText("");
+        //pintar();
+//        tokens.clear();
 
     }//GEN-LAST:event_runActionPerformed
 

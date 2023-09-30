@@ -8,7 +8,7 @@ public enum TypeToken {
     ID,
     OP_ARITMETIC,
     OP_COMPARACION,
-    OP_LOGICO,
+    INDENTACION,
     OP_ASIGN,
     KEY_WORD,
     CONST,
