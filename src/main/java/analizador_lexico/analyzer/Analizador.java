@@ -18,8 +18,8 @@ public class Analizador {
     private boolean caden = false, coment = false;
     public static ArrayList<Token> tokens = new ArrayList();
     //public static ArrayList<Token> errors = new ArrayList();
-    private String[] keysWords = {"and", "not", "or", "True", "False", "and", "as", "assert", "break", "class", "continue", "def ", "del", "elif", "else", "except", "finally", "for", "from", "global", "if ", "import", "i", "is", "lamda", "None", "nonlocal", "pass", "raise", "return", "try", "while", "with", "yield"};
-    private String[] others = {")", "( ", ": ", "; ", ", ", ". ", "{ ", "} ", "[ ", "] "};
+    private String[] keysWords = {"and", "not", "or", "True", "False", "and", "as", "assert", "break", "class", "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import", "i", "is", "lamda", "None", "nonlocal", "pass", "raise", "return", "try", "while", "with", "yield"};
+    private String[] others = {")", "(", ":",";", ",", ".", "{","}", "[","]"};
     private String[] op_comp = {"==", ">=", "<=", ">", "<", "!="};
 
     public static boolean isError = false;
@@ -178,7 +178,8 @@ public class Analizador {
     }
 
     //funcion que determina si es identificador
-    public boolean isIdentificator(String lexema) {
+    public boolean isIdentificator(String lex) {
+        String lexema=lex.trim();
         if (lexema.isEmpty()) {
             return false;
         }
@@ -197,7 +198,8 @@ public class Analizador {
         return true;
     }
 
-    public boolean isKeyWord(String lexer){
+    public boolean isKeyWord(String lex){
+        String lexer=lex.trim();
         int leng = lexer.length();
         for (String key : keysWords) {
             if ((lexer.substring(1, leng).equals(key))) {
@@ -223,7 +225,8 @@ public class Analizador {
         return (c >= 48 && c <= 57);
     }
 
-    public static boolean opAritmetico(String c) {
+    public static boolean opAritmetico(String a) {
+        String c=a.trim();
         if (c.equals("**")) {
             return true;
         } else if (c.equals("//")) {
@@ -232,18 +235,21 @@ public class Analizador {
             return true;
         } else if (c.equals("/")) {
             return true;
-        } else if (c.equals("+ ")) {
+        } else if (c.equals("+")) {
             return true;
-        } else if (c.equals("- ")) {
+        } else if (c.equals("-")) {
             return true;
-        } else if (c.equals("% ")) {
+        } else if (c.equals("%")) {
             return true;
         }
 
         return false;
     }
 
-    public boolean isOther(String lexer) {
+    public boolean isOther(String lex) {
+        System.out.println(lex);
+        String lexer=lex.trim();
+        System.out.println(lexer);
         for (String ot : others) {
             if (ot.equals(lexer)) {
                 return true;
