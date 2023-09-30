@@ -6,14 +6,14 @@ package analizador_lexico.enums;
 
 public enum TypeToken {
     ID,
-    OP_ARITMETIC,
-    OP_COMPARACION,
-    INDENTACION,
-    OP_ASIGN,
-    KEY_WORD,
-    CONST,
-    COMENTARIO,
-    OTROS,
-    ERRORS
+    OP_ARIT,
+    OP_COMP,
+    INDENT,
+    OP_AS,
+    KY_WD,
+    CONS,
+    COM,
+    OT,
+    ERR
     
 }

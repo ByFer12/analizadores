@@ -10,7 +10,6 @@ import java.awt.List;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
@@ -33,6 +32,7 @@ public class Analizer extends javax.swing.JFrame {
     DefaultTableModel modelTable;
     private Analizador analyzer = new Analizador();
     ArrayList<Token> tokens;
+    ArrayList<Token> errors;
 
     ArrayList<Integer> lineNumbers = new ArrayList<>();
 
@@ -54,14 +54,14 @@ public class Analizer extends javax.swing.JFrame {
     public void printTable() {
 
         boolean isError = Analizador.isError;
-//        tokens = Analizador.tokens;
-        //errors=Analizador.errors;
+        tokens = Analizador.tokens;
+        //errors=Analizador.errores;
 
         if (isError) {
             this.title.setText("Errores Lexicos");
             Object[] ob = new Object[5];
             for (int i = 0; i < tokens.size(); i++) {
-                if (tokens.get(i).getToken() == TypeToken.ERRORS) {
+                if (tokens.get(i).getToken() == TypeToken.ERR) {
 
                     ob[0] = tokens.get(i).getToken();
                     ob[1] = tokens.get(i).getNombre();
@@ -77,7 +77,7 @@ public class Analizer extends javax.swing.JFrame {
             title.setText("Tokens Reconocidos");
             Object[] ob = new Object[5];
             for (int i = 0; i < tokens.size(); i++) {
-                if ((tokens.get(i).getToken() != TypeToken.ERRORS)) {
+                if ((tokens.get(i).getToken() != TypeToken.ERR)) {
                     ob[0] = tokens.get(i).getToken();
                     ob[1] = tokens.get(i).getNombre();
                     ob[2] = tokens.get(i).getLexema();
@@ -100,37 +100,37 @@ public class Analizer extends javax.swing.JFrame {
         }
     }
 
-//    public void pintar() {
-//        StyledDocument doc = area_code.getStyledDocument();
-//        SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
-//        for (Token tk : tokens) {
-//            SimpleAttributeSet estilo = new SimpleAttributeSet();
-//            if ((tk.getToken() == TypeToken.OP_ARITMETIC) || (tk.getToken() == TypeToken.OP_COMPARACION)||(tk.getToken() == TypeToken.OP_ASIGN)) {
-//                StyleConstants.setForeground(estilo, Color.CYAN);
-//
-//            }else if(tk.getToken()==TypeToken.KEY_WORD){
-//                StyleConstants.setForeground(estilo, Color.magenta);
-//            }else if(tk.getToken()==TypeToken.CONST){
-//                StyleConstants.setForeground(estilo, Color.ORANGE);
-//            }else if(tk.getToken()==TypeToken.COMENTARIO){
-//                StyleConstants.setForeground(estilo, Color.GRAY);
-//                
-//            }else if(tk.getToken()==TypeToken.OTROS){
-//                StyleConstants.setForeground(estilo, Color.green);
-//            }else if(tk.getToken()==TypeToken.ID){
-//                StyleConstants.setForeground(estilo, Color.BLACK);
-//            }else if(tk.getToken()==TypeToken.ERRORS){
-//                 StyleConstants.setForeground(estilo, Color.red);
-//            }
+    public void pintar() {
+        StyledDocument doc = area_code.getStyledDocument();
+        SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
+        for (Token tk : tokens) {
+            SimpleAttributeSet estilo = new SimpleAttributeSet();
+            if ((tk.getToken() == TypeToken.OP_ARIT) || (tk.getToken() == TypeToken.OP_COMP)||(tk.getToken() == TypeToken.OP_AS)) {
+                StyleConstants.setForeground(estilo, Color.CYAN);
+
+            }else if(tk.getToken()==TypeToken.KY_WD){
+                StyleConstants.setForeground(estilo, Color.magenta);
+            }else if(tk.getToken()==TypeToken.CONS){
+                StyleConstants.setForeground(estilo, Color.ORANGE);
+            }else if(tk.getToken()==TypeToken.COM){
+                StyleConstants.setForeground(estilo, Color.GRAY);
+                
+            }else if(tk.getToken()==TypeToken.OT){
+                StyleConstants.setForeground(estilo, Color.green);
+            }else if(tk.getToken()==TypeToken.ID){
+                StyleConstants.setForeground(estilo, Color.BLACK);
+            }else if(tk.getToken()==TypeToken.ERR){
+                 StyleConstants.setForeground(estilo, Color.red);
+            }
 //            try {
 //                doc.insertString(doc.getLength(), tk.getLexema() + " ", estilo);
 //
 //            } catch (BadLocationException e) {
 //                e.printStackTrace();
 //            }
-//
-//        }
-//    }
+
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -541,11 +541,11 @@ public class Analizer extends javax.swing.JFrame {
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
         String textCode = area_code.getText();
         analizador.analizar(textCode);
-        //limpiar();
-        //printTable();
+        limpiar();
+        printTable();
         //area_code.setText("");
-        //pintar();
-//        tokens.clear();
+        pintar();
+      tokens.clear();
 
     }//GEN-LAST:event_runActionPerformed
 
