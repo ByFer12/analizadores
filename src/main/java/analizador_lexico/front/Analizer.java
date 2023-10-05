@@ -1,8 +1,10 @@
 package analizador_lexico.front;
 
 import analizador_lexico.analyzer.Analizador;
+import analizador_lexico.analyzer.Sintaxis;
 import analizador_lexico.analyzer.Token;
 import analizador_lexico.enums.TypeToken;
+import analizador_lexico.symbol_table.Simbolo;
 import analizador_lexico.utils.Archive;
 import java.awt.Color;
 import java.awt.Font;
@@ -15,6 +17,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import analizador_lexico.symbol_table.SymbolTable;
 
 /**
  *
@@ -35,6 +38,7 @@ public class Analizer extends javax.swing.JFrame {
     ArrayList<Token> errors;
 
     ArrayList<Integer> lineNumbers = new ArrayList<>();
+    Sintaxis sy;
 
     public Analizer() {
         initComponents();
@@ -49,6 +53,8 @@ public class Analizer extends javax.swing.JFrame {
         modelTable.addColumn("Lexema");
         modelTable.addColumn("Linea");
         modelTable.addColumn("Columna");
+
+        
     }
 
     public void printTable() {
@@ -56,7 +62,7 @@ public class Analizer extends javax.swing.JFrame {
         boolean isError = Analizador.isError;
         tokens = Analizador.tokens;
         //errors=Analizador.errores;
-
+          
         if (isError) {
             this.title.setText("Errores Lexicos");
             Object[] ob = new Object[5];
@@ -122,12 +128,14 @@ public class Analizer extends javax.swing.JFrame {
             }else if(tk.getToken()==TypeToken.ERR){
                  StyleConstants.setForeground(estilo, Color.red);
             }
-//            try {
-//                doc.insertString(doc.getLength(), tk.getLexema() + " ", estilo);
-//
-//            } catch (BadLocationException e) {
-//                e.printStackTrace();
-//            }
+            try {
+               
+                doc.insertString(doc.getLength(), tk.getLexema() + " ", estilo);
+                System.out.println("\n");
+
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
 
         }
     }
@@ -159,6 +167,7 @@ public class Analizer extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         area_code = new javax.swing.JTextPane();
         position = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -209,8 +218,13 @@ public class Analizer extends javax.swing.JFrame {
         jScrollPane2.setViewportView(table_error_tokens);
         table_error_tokens.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (table_error_tokens.getColumnModel().getColumnCount() > 0) {
+            table_error_tokens.getColumnModel().getColumn(0).setHeaderValue("Token");
+            table_error_tokens.getColumnModel().getColumn(1).setHeaderValue("Patron");
+            table_error_tokens.getColumnModel().getColumn(2).setHeaderValue("Lexema");
             table_error_tokens.getColumnModel().getColumn(3).setResizable(false);
+            table_error_tokens.getColumnModel().getColumn(3).setHeaderValue("Linea");
             table_error_tokens.getColumnModel().getColumn(4).setResizable(false);
+            table_error_tokens.getColumnModel().getColumn(4).setHeaderValue("Columna");
         }
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -218,8 +232,9 @@ public class Analizer extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 682, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 16, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -277,6 +292,13 @@ public class Analizer extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(area_code);
 
+        jButton2.setText("Syntax");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout error_o_tokenLayout = new javax.swing.GroupLayout(error_o_token);
         error_o_token.setLayout(error_o_tokenLayout);
         error_o_tokenLayout.setHorizontalGroup(
@@ -300,8 +322,11 @@ public class Analizer extends javax.swing.JFrame {
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
+                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
@@ -347,7 +372,9 @@ public class Analizer extends javax.swing.JFrame {
                                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(22, 22, 22)))
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(lineNumberLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(error_o_tokenLayout.createSequentialGroup()
@@ -376,7 +403,7 @@ public class Analizer extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(54, 54, 54)
                 .addComponent(jLabel1)
-                .addContainerGap(729, Short.MAX_VALUE))
+                .addContainerGap(736, Short.MAX_VALUE))
         );
 
         tobbe1.addTab("", jPanel3);
@@ -397,7 +424,7 @@ public class Analizer extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(132, 132, 132)
                 .addComponent(jLabel4)
-                .addContainerGap(651, Short.MAX_VALUE))
+                .addContainerGap(658, Short.MAX_VALUE))
         );
 
         tobbe1.addTab("", jPanel2);
@@ -485,7 +512,6 @@ public class Analizer extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     private void btn_Archivo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_Archivo1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         int choice = fileChooser.showOpenDialog(this);
@@ -540,12 +566,23 @@ public class Analizer extends javax.swing.JFrame {
 
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
         String textCode = area_code.getText();
+        Simbolo dimv;
         analizador.analizar(textCode);
         limpiar();
         printTable();
-        //area_code.setText("");
+        sy=new Sintaxis(Analizador.tokens);
+        sy.declaracionVar();
+        SymbolTable tabla=sy.getSybolTable();
+        for (Simbolo simbolo : tabla.obtenerTodosSimbolos()) {
+               System.out.println("Variable: Nombre= " + simbolo.getNombreVar()+
+                       ", Tipo=" + simbolo.getTipoVar() +
+                       ", Valor=" + simbolo.getValueVar());
+        }
+        area_code.setText("");
         pintar();
       tokens.clear();
+     
+      
 
     }//GEN-LAST:event_runActionPerformed
 
@@ -556,6 +593,11 @@ public class Analizer extends javax.swing.JFrame {
     private void area_codeCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_area_codeCaretUpdate
         updateCursorPosition();
     }//GEN-LAST:event_area_codeCaretUpdate
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        sy.declaracionVar();
+    }//GEN-LAST:event_jButton2ActionPerformed
     private void updateCursorPosition() {
         int caretPosition = area_code.getCaretPosition();
         int newLineNumber = area_code.getDocument().getDefaultRootElement().getElementIndex(caretPosition) + 1;
@@ -588,6 +630,7 @@ public class Analizer extends javax.swing.JFrame {
     private javax.swing.JMenu go_analizer;
     private javax.swing.JMenu go_graphics;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

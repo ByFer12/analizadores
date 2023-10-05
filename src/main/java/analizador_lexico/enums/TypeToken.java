@@ -14,6 +14,8 @@ public enum TypeToken {
     CONS,
     COM,
     OT,
-    ERR
+    ERR,
+    SPACE,
+    SALT
     
 }
