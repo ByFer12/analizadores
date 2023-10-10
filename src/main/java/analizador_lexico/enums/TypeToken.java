@@ -16,6 +16,10 @@ public enum TypeToken {
     OT,
     ERR,
     SPACE,
-    SALT
+    SALT,
+    OP_LOG,
+    BOOL,
+    OP_RE_AS,
+    ENTERO
     
 }
