@@ -20,17 +20,24 @@ public class Sintaxis {
     }
 
     public void syntaxAnalyer() {
-        if (this.token.get(index).getToken().equals(TypeToken.ID)) {
-            idAnalyzer();
-        } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-            comentAnalyzer();
+        if (index < token.size()) {
+            if (this.token.get(index).getToken().equals(TypeToken.ID)) {
+                idAnalyzer();
+            } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                comentAnalyzer();
 
-        } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-            index++;
-            syntaxAnalyer();
+            } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                index++;
+                syntaxAnalyer();
 
-        } else if (this.token.get(index).getToken().equals(TypeToken.KY_WD)) {
-            kwAnalyzer();
+            } else if (this.token.get(index).getLexema().equals("print")) {
+                print();
+            } else if (this.token.get(index).getLexema().equals("if")) {
+                condicionIf();
+            }else if(this.token.get(index).getToken().equals(TypeToken.SPACE)){
+                indentado();
+                syntaxAnalyer();
+            }
         }
 
     }
@@ -59,33 +66,49 @@ public class Sintaxis {
                     String tipoDato = token.get(index).getToken().name();
                     String valorVariable = token.get(index).getLexema();
                     index++;
+                    if (index < token.size()) {
 
-                    if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                        index++;
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                            index++;
 
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                            index++;
+
+                        }
                     }
-                    if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                        index++;
 
-                    }
                     this.sybolTable.agregarSimbolo(nombreVar, tipoDato, valorVariable);
+                    if (index < token.size()) {
 
-                    if (this.token.get(index).getToken().equals(TypeToken.OP_ARIT)) {
-                        //OPERADOR ARITMETICO
-                        opAritmetico(nombreVar, tipoDato, valorVariable);
+                        if (this.token.get(index).getToken().equals(TypeToken.OP_ARIT)) {
+                            //OPERADOR ARITMETICO
+                            opAritmetico(nombreVar, tipoDato, valorVariable);
 
-                    } else if (this.token.get(index).getLexema().equals("is")) {
+                        } else if (this.token.get(index).getLexema().equals("is")) {
 
-                        //OPERADOR DE IDENTIDAD
-                        operadorIdentidad(nombreVar, tipoDato, valorVariable);
+                            //OPERADOR DE IDENTIDAD
+                            operadorIdentidad(nombreVar, tipoDato, valorVariable);
 
-                    } else if (this.token.get(index).getToken().equals(TypeToken.OP_COMP)) {
+                        } else if (this.token.get(index).getLexema().equals("if")) {
+                            tipoDato = token.get(index).getToken().name();
+                            valorVariable += token.get(index).getLexema();
+                            //OPERADOR TERNARIO
+                            operadorTernario(nombreVar, tipoDato, valorVariable);
 
-                        //OPERADOR DE COMPARACION
-                        operadorComparacion(nombreVar, tipoDato, valorVariable);
+                        } else if (this.token.get(index).getLexema().equals("in") || this.token.get(index).getLexema().equals("not")) {
 
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + token.get(index).getFila() + " y columna: " + token.get(index).getColumna());
+                            //AQUI VA OPERADOR DE PERTENENCIA
+                            valorVariable += token.get(index).getLexema();
+                            tipoDato = token.get(index).getToken().name();
+                            operadorPertenencia(nombreVar, tipoDato, valorVariable);
+
+                        } else if (this.token.get(index).getToken().equals(TypeToken.OP_COMP)) {
+
+                            //OPERADOR DE COMPARACION
+                            operadorComparacion(nombreVar, tipoDato, valorVariable);
+
+                        }
                     }
 
                     if (index < token.size()) {
@@ -95,18 +118,29 @@ public class Sintaxis {
                         if (this.token.get(index).getToken().equals(TypeToken.COM)) {
                             index++;
                         }
+
                         if (index < token.size()) {
 
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                                 index++;
                                 syntaxAnalyer();
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                                if (token.get(index).getToken().equals(TypeToken.OP_AS)) {
+                                    index += 4;
+                                } else {
+
+                                    index++;
+                                    index++;
+                                }
+                                syntaxAnalyer();
                             }
                         }
                     }
-
-                    if (index < token.size()) {
-                        syntaxAnalyer();
-                    }
+//
+//                    if (index < token.size()) {
+//                        syntaxAnalyer();
+//                    }
 
                     //Aqui va la logica para una lista
                 } else if (this.token.get(index).getToken().equals(TypeToken.OT) && this.token.get(index).getLexema().equals("[")) {
@@ -115,7 +149,7 @@ public class Sintaxis {
                     listas(nombreVar, tipo, valor);
 
                 } else if (this.token.get(index).getToken().equals(TypeToken.OP_LOG) && this.token.get(index).getLexema().equals("not")) {
-                    
+
                     //DESPUES DE ASIGNAR INICIA CON OPERADOR LOGICO NOT
                     operadorLogicoNot(nombreVar);
 
@@ -238,15 +272,24 @@ public class Sintaxis {
                 System.out.println("Estoy dentro del while");
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
-                    System.out.println("Tk: " + this.token.get(index).getLexema());
                     index++;
                     if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                         valor += this.token.get(index).getLexema();
                         index++;
-                    }
-                    if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                    } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
                         enviarTabla = true;
                         break;
+                    }
+                    if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                        enviarTabla = true;
+                        break;
+                    }
+                    if (this.token.get(index).getLexema().equals("]")) {
+                        valor += this.token.get(index).getLexema();
                     }
                     if (this.token.get(index).getToken().equals(TypeToken.OT)) {
                         if (this.token.get(index).getLexema().equals(",")) {
@@ -254,6 +297,7 @@ public class Sintaxis {
 
                             index++;
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
 
                                 enviarTabla = true;
                                 break;
@@ -277,10 +321,13 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                 index++;
                 syntaxAnalyer();
+            } else if (token.get(index).getToken().equals(TypeToken.ID)) {
+                syntaxAnalyer();
             }
         }
     }
 
+    //OPERADORES DE ASIGNACION
     public void operadorComparacion(String nombreVar, String tipoDato, String valorVariable) {
         valorVariable += token.get(index).getLexema();
         index++;
@@ -378,8 +425,206 @@ public class Sintaxis {
         }
     }
 
-    public void kwAnalyzer() {
-        System.out.println("Estoy en analyzer");
+    public void operadorPertenencia(String nombreVar, String tipoDato, String valorVariable) {
+
+        if (this.token.get(index).getLexema().equals("not")) {
+
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                valorVariable += token.get(index).getLexema();
+                index++;
+
+            }
+            if (this.token.get(index).getLexema().equals("in")) {
+                valorVariable += token.get(index).getLexema();
+                index++;
+                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                    index++;
+
+                }
+                if (this.token.get(index).getLexema().equals("[")) {
+                    valorVariable += token.get(index).getLexema();
+                    listas(nombreVar, tipoDato, valorVariable);
+
+                }
+
+            }
+
+        } else {
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                valorVariable += token.get(index).getLexema();
+                index++;
+            }
+            if (this.token.get(index).getLexema().equals("[")) {
+                valorVariable += token.get(index).getLexema();
+                listas(nombreVar, tipoDato, valorVariable);
+
+            }
+
+        }
+    }
+
+    public void operadorTernario(String nombreVar, String tipoDato, String valorVariable) {
+        index++;
+        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+            valorVariable += token.get(index).getLexema();
+            index++;
+        }
+        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
+            valorVariable += token.get(index).getLexema();
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                valorVariable += token.get(index).getLexema();
+                index++;
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.OP_COMP)) {
+                valorVariable += token.get(index).getLexema();
+                index++;
+                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                    index++;
+                }
+                if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+
+                    valorVariable += token.get(index).getLexema();
+                    index++;
+                    if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                        valorVariable += token.get(index).getLexema();
+                        index++;
+                    }
+                    if (this.token.get(index).getLexema().equals("else")) {
+                        valorVariable += token.get(index).getLexema();
+                        index++;
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                            valorVariable += token.get(index).getLexema();
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
+                            valorVariable += token.get(index).getLexema();
+                            index++;
+                        }
+                    }
+                }
+            }
+        }
+        this.sybolTable.agregarSimbolo(nombreVar, "Operador Ternario", valorVariable);
+    }
+
+    //OPERADORES DE SALIDA PRINT
+    public void print() {
+        String prueba = "";
+        if (this.token.get(index).getLexema().equals("print")) {
+            prueba += token.get(index).getLexema();
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                prueba += token.get(index).getLexema();
+                index++;
+            }
+            if (this.token.get(index).getLexema().equals("(")) {
+                prueba += token.get(index).getLexema();
+                index++;
+                try {
+                    while (!this.token.get(index).getLexema().equals(")")) {
+                        System.out.println("Dentro del while print");
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                            prueba += token.get(index).getLexema();
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
+
+                            prueba += token.get(index).getLexema();
+                            index++;
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                prueba += token.get(index).getLexema();
+                                index++;
+                            }
+                            if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()-1) + " y columna: " + (token.get(index - 1).getColumna()));
+
+                                break;
+                            }
+                            if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index - 1).getColumna()));
+
+                                break;
+                            }
+                            if (this.token.get(index).getLexema().equals("+") || this.token.get(index).getLexema().equals(",")) {
+                                prueba += token.get(index).getLexema();
+                                index++;
+
+                            }
+                        }
+                    }
+                    System.out.println("Palabra correcta");
+                } catch (IndexOutOfBoundsException e) {
+
+                }
+            }
+        }
+
+        index++;
+        //this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
+        if (index < token.size()) {
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                index++;
+
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                index++;
+
+            }
+            if (index < token.size()) {
+                if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                    index+=2;
+                    syntaxAnalyer();
+                } else if (token.get(index).getToken().equals(TypeToken.ID)) {
+                    syntaxAnalyer();
+                }
+            }
+        }
+    }
+
+    //CONDICIONALES IF
+    public void condicionIf() {
+        if (this.token.get(index).getLexema().equals("if")) {
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                index++;
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.BOOL)) {
+                index++;
+                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                    index++;
+
+                }
+                if (this.token.get(index).getLexema().equals(":")) {
+                    index++;
+                    if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                        index++;
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                            index++;
+                            indentado();
+                            System.out.println("Indentado registrado");
+                            if (this.token.get(index).getToken().equals(TypeToken.ID)) {
+                                idAnalyzer();
+                            }
+
+                        } else {
+                            System.out.println("Error no tiene indentado");
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    public void indentado() {
+        while (index < token.size() && token.get(index).getToken().equals(TypeToken.SPACE)) {
+            System.out.println("Espacio");
+            index++;
+        }
+
     }
 
     public SymbolTable getSybolTable() {

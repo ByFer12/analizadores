@@ -442,7 +442,7 @@ public class Analizer extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(tobbe1, javax.swing.GroupLayout.PREFERRED_SIZE, 1473, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 1, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -571,6 +571,8 @@ public class Analizer extends javax.swing.JFrame {
         Simbolo dimv;
         analizador.analizar(textCode);
         printTable();
+        area_code.setText("");
+        pintar();
         sy=new Sintaxis(Analizador.tokens);
         sy.syntaxAnalyer();
         SymbolTable tabla=sy.getSybolTable();
@@ -581,8 +583,6 @@ public class Analizer extends javax.swing.JFrame {
             ", Tipo: " + simbolo.getTipoVar() +
             ", Valor: " + simbolo.getValueVar()+"\n";
         }
-        area_code.setText("");
-        pintar();
         tokens.clear();
         JOptionPane.showMessageDialog(null, "\tTABLA DE SIMBOLOS\n"+table);
     }//GEN-LAST:event_runActionPerformed
