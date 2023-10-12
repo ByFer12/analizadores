@@ -165,7 +165,6 @@ public class Analizer extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         tobbe1 = new javax.swing.JTabbedPane();
         error_o_token = new javax.swing.JPanel();
-        btn_save_Archivo = new javax.swing.JButton();
         run = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -178,6 +177,7 @@ public class Analizer extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         table_error_tokens = new javax.swing.JTable();
+        btn_save_Archivo = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         area_code = new javax.swing.JTextPane();
         jPanel3 = new javax.swing.JPanel();
@@ -193,14 +193,6 @@ public class Analizer extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tobbe1.setEnabled(false);
-
-        btn_save_Archivo.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        btn_save_Archivo.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/save.png")); // NOI18N
-        btn_save_Archivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_save_ArchivoActionPerformed(evt);
-            }
-        });
 
         run.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         run.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/play.png")); // NOI18N
@@ -284,6 +276,14 @@ public class Analizer extends javax.swing.JFrame {
             table_error_tokens.getColumnModel().getColumn(4).setHeaderValue("Columna");
         }
 
+        btn_save_Archivo.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        btn_save_Archivo.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/save.png")); // NOI18N
+        btn_save_Archivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_save_ArchivoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -292,13 +292,19 @@ public class Analizer extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(160, Short.MAX_VALUE))
+                .addComponent(jScrollPane2)
+                .addGap(18, 18, 18)
+                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         area_code.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
@@ -315,34 +321,30 @@ public class Analizer extends javax.swing.JFrame {
             error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(error_o_tokenLayout.createSequentialGroup()
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(error_o_tokenLayout.createSequentialGroup()
-                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addComponent(position))
-                            .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                .addGap(35, 35, 35)
-                                .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                        .addGap(85, 85, 85)
-                                        .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(76, 76, 76)
-                                        .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(117, 117, 117)
-                        .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, error_o_tokenLayout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(98, 98, 98))
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 691, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                .addComponent(position)
+                                .addGap(160, 160, 160))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 691, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(130, 130, 130)
+                        .addGap(142, 142, 142)
                         .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(37, 37, 37)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(1370, 1370, 1370)
@@ -358,22 +360,21 @@ public class Analizer extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(position))
-                    .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(24, 24, 24)
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(error_o_tokenLayout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(position)))
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addGap(35, 35, 35)
@@ -381,9 +382,9 @@ public class Analizer extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 679, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(24, 24, 24))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                 .addGap(93, 93, 93)
@@ -649,7 +650,7 @@ public class Analizer extends javax.swing.JFrame {
     private javax.swing.JLabel position;
     private javax.swing.JButton run;
     private javax.swing.JTable table_error_tokens;
-    private javax.swing.JLabel title;
+    public javax.swing.JLabel title;
     private javax.swing.JTabbedPane tobbe1;
     // End of variables declaration//GEN-END:variables
 }
