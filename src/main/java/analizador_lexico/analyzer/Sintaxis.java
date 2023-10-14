@@ -8,10 +8,13 @@ import javax.swing.JOptionPane;
 
 public class Sintaxis {
 
+    private boolean hayIf = false, hayElif = false;
+    private boolean haySpace = false;
     private ArrayList<Token> token;
     private int index = 0;
     private SymbolTable sybolTable;
     boolean pasa = false;
+    private int conteoIndentado = 0;
 
     public Sintaxis(ArrayList<Token> token) {
         this.token = token;
@@ -33,7 +36,44 @@ public class Sintaxis {
             } else if (this.token.get(index).getLexema().equals("print")) {
                 print();
             } else if (this.token.get(index).getLexema().equals("if")) {
+                hayIf = true;
+                condicionIf();
+            } else if (this.token.get(index).getLexema().equals("else")) {
 
+                if (hayIf || hayElif) {
+                    index++;
+                    hayIf = false;
+                    hayElif = false;
+                    if (this.token.get(index).getLexema().equals(":")) {
+                        index++;
+                        syntaxAnalyer();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                        index += 2;
+                        syntaxAnalyer();
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                    index += 2;
+                    syntaxAnalyer();
+
+                }
+            } else if (this.token.get(index).getLexema().equals("elif")) {
+                if (hayIf) {
+                    hayElif = true;
+                    condicionIf();
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                    index += 2;
+                    syntaxAnalyer();
+
+                }
+
+                //AQUI VA EL METODO PARA RECONOCER LA SENTENCIA ELIF
+            } else if (this.token.get(index).getLexema().equals("while")) {
+                //aqui va todo lo del while:
                 condicionIf();
             } else if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 indentado();
@@ -269,7 +309,9 @@ public class Sintaxis {
         index++;
         this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
         if (index < token.size()) {
-
+            if (this.token.get(index).getLexema().equals(",")) {
+                index++;
+            }
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 index++;
             }
@@ -285,6 +327,124 @@ public class Sintaxis {
                 }
             }
         }
+
+    }
+
+    public String diccionarioLista(String nombreVar, String tipo, String valor) {
+        boolean enviarTabla = false;
+        index++;
+        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+            valor += this.token.get(index).getLexema();
+            index++;
+        }
+        try {
+
+            while (!this.token.get(index).getLexema().equals("}")) {
+                System.out.println("Estoy dentro del while de diccionario");
+                if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                    valor += this.token.get(index).getLexema();
+                    index++;
+                    if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                        valor += this.token.get(index).getLexema();
+                        index++;
+                    } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                        enviarTabla = true;
+                        break;
+                    }
+                    if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                        enviarTabla = true;
+                        break;
+                    }
+                    if (this.token.get(index).getLexema().equals("}")) {
+                        valor += this.token.get(index).getLexema();
+                    }
+
+                    if (this.token.get(index).getLexema().equals(":")) {
+                        valor += this.token.get(index).getLexema();
+                        index++;
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                            valor += this.token.get(index).getLexema();
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                            valor += this.token.get(index).getLexema();
+                            index++;
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                index++;
+                            }
+                            if (this.token.get(index).getLexema().equals(",")) {
+                                valor += this.token.get(index).getLexema();
+                                index++;
+                                if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                                    JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+
+                                    enviarTabla = true;
+                                    break;
+                                }
+                                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                    index++;
+                                }
+                            }
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                valor += this.token.get(index).getLexema();
+                                index++;
+                            } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                                enviarTabla = true;
+                                break;
+                            }
+                            if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                                enviarTabla = true;
+                                break;
+                            }
+                            if (this.token.get(index).getLexema().equals("]")) {
+                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
+
+                                enviarTabla = true;
+                                break;
+                            }
+
+                            if (this.token.get(index).getLexema().equals("}")) {
+                                valor += this.token.get(index).getLexema();
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Error en la sintaxis de excepcion");
+        }
+        index++;
+        //this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
+        if (index < token.size()) {
+            if (this.token.get(index).getLexema().equals(",")) {
+                index++;
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                index++;
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                index++;
+            }
+            if (index < token.size()) {
+                if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                    index++;
+                    syntaxAnalyer();
+                } else if (token.get(index).getToken().equals(TypeToken.ID)) {
+                    syntaxAnalyer();
+                }
+            }
+        }
+        return valor;
 
     }
 
@@ -423,6 +583,9 @@ public class Sintaxis {
                             }
                         }
                     }
+                } else if (this.token.get(index).getLexema().equals("{")) {
+                    valor += token.get(index).getLexema();
+                    valor = diccionarioLista(nombreVar, tipo, valor);
                 }
             }
             if (!enviarTabla) {
@@ -654,6 +817,10 @@ public class Sintaxis {
                                 prueba += token.get(index).getLexema();
                                 index++;
                             }
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                prueba += token.get(index).getLexema();
+                                index++;
+                            }
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                                 JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
 
@@ -691,7 +858,7 @@ public class Sintaxis {
             }
             if (index < token.size()) {
                 if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                    index += 2;
+                    index++;
                     syntaxAnalyer();
                 } else if (token.get(index).getToken().equals(TypeToken.ID)) {
                     syntaxAnalyer();
@@ -701,76 +868,90 @@ public class Sintaxis {
     }
 
     //CONDICIONALES IF
-    public void condicionIf(){
-        
-            
-        try{
-        if (this.token.get(index).getLexema().equals("if")) {
-            index++;
-            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                index++;
-            }
-            if (this.token.get(index).getToken().equals(TypeToken.BOOL)) {
+    public void condicionIf() {
+
+        try {
+            if (this.token.get(index).getLexema().equals("if") || this.token.get(index).getLexema().equals("elif") || this.token.get(index).getLexema().equals("while")) {
                 index++;
                 if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     index++;
-
                 }
-                if (this.token.get(index).getLexema().equals(":")) {
+                if (this.token.get(index).getToken().equals(TypeToken.BOOL) || this.token.get(index).getToken().equals(TypeToken.OP_LOG)) {
                     index++;
                     if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                         index++;
+
                     }
-                    if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                    if (this.token.get(index).getToken().equals(TypeToken.ID)) {
                         index++;
-                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                            index++;
-                            indentado();
-                            System.out.println("Indentado registrado");
-                            if (this.token.get(index).getToken().equals(TypeToken.ID)) {
-                                idAnalyzer();
-                            } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                                syntaxAnalyer();
-                            }
-
-                        } else {
-                            System.out.println("Error no tiene indentado");
-                        }
 
                     }
-                }
-            } else if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
-
-                opCompIf();
-                if (this.token.get(index).getLexema().equals(":")) {
-                    index++;
                     if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                         index++;
-                    }
 
-                    if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                    }
+                    if (this.token.get(index).getLexema().equals(":")) {
+                        index++;
+                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                            index++;
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                index++;
+                                conteoIndentado++;
+                                indentado();
+                                System.out.println("Indentado registrado");
+                                if (this.token.get(index).getToken().equals(TypeToken.ID)) {
+                                    idAnalyzer();
+                                } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                                    syntaxAnalyer();
+                                }
+
+                            } else {
+                                System.out.println("Error no tiene indentado");
+                            }
+
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
+
+                    }
+                } else if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
+                    opCompIf();
+                    if (this.token.get(index).getLexema().equals(":")) {
                         index++;
                         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                             index++;
-                            indentado();
-                            System.out.println("Indentado registrado");
-                            if (this.token.get(index).getToken().equals(TypeToken.ID)) {
-                                idAnalyzer();
-                            } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                            index++;
+                        }
+                        if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
+                            index++;
+                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                                index++;
+                                indentado();
+                                System.out.println("Indentado registrado");
                                 syntaxAnalyer();
+                            } else {
+                                System.out.println("Error no tiene indentado");
                             }
 
-                        } else {
-                            System.out.println("Error no tiene indentado");
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
 
                     }
-                }
 
+                }
             }
-        }
-        }catch(IndexOutOfBoundsException e){
-            
+        } catch (IndexOutOfBoundsException e) {
+
         }
     }
 
@@ -778,6 +959,7 @@ public class Sintaxis {
         while (index < token.size() && token.get(index).getToken().equals(TypeToken.SPACE)) {
             System.out.println("Espacio");
             index++;
+            conteoIndentado++;
         }
 
     }
@@ -793,13 +975,26 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 index++;
             }
-            if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
+            if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
                 index++;
                 if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     index++;
                 }
 
             }
+        } else if (this.token.get(index).getLexema().equals("in")) {
+            index++;
+            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                index++;
+            }
+            if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
+                index++;
+                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                    index++;
+                }
+
+            }
+
         }
 
     }

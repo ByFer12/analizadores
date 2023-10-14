@@ -24,6 +24,7 @@ public class Analizador {
     String opLog = "(and|or|not)";
     String bool = "(True|False)";
     String cadena = "\"[^\"]*\"|'[^']*'"; //ya esta
+    String errorCadena="(\".*)|(\'.*)";
     String opArit = "\\+|-|\\*\\*|/|//|%|\\*";
     String opComp = ">=|<=|>|<|(==)|!=";
     String opAsig = "=";
@@ -48,7 +49,7 @@ public class Analizador {
     int column = 1;
 
     public void analizar(String input) {
-        Matcher matcher = Pattern.compile(opComp+"|"+id + "|"+bool+"|"+op_re_as+"|" + entero + "|"+opLog+"|" + decimal + "|" + coment + "|" + space + "|" + salto + "|" + keyWord + "|" + cadena + "|" + opArit  + "|" + opAsig + "|" + otros + "|" + indentado).matcher(input);
+        Matcher matcher = Pattern.compile(opComp+"|"+id + "|"+cadena+"|"+errorCadena+"|"+op_re_as+"|" + entero + "|"+opLog+"|" + decimal + "|" + coment + "|" + space + "|" + salto + "|" + keyWord + "|" + bool + "|" + opArit  + "|" + opAsig + "|" + otros + "|" + indentado).matcher(input);
 
         while (matcher.find()) {
             //String lex;
@@ -114,6 +115,10 @@ public class Analizador {
 
             } else if (Pattern.matches(op_re_as, lex)) {
                 token = new Token(TypeToken.OP_RE_AS, lex, "Espacio", linea, column);
+                tokens.add(token);
+
+            }else if (Pattern.matches(errorCadena, lex)) {
+                token = new Token(TypeToken.ERR, lex, "Error", linea, column);
                 tokens.add(token);
 
             }else {
