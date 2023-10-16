@@ -23,64 +23,71 @@ public class Sintaxis {
     }
 
     public void syntaxAnalyer() {
-        if (index < token.size()) {
-            if (this.token.get(index).getToken().equals(TypeToken.ID)) {
-                idAnalyzer();
-            } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                comentAnalyzer();
+        try {
+            if (index < token.size()) {
+                if (this.token.get(index).getToken().equals(TypeToken.ID)) {
+                    idAnalyzer();
+                } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+                    comentAnalyzer();
 
-            } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                index++;
-                syntaxAnalyer();
-
-            } else if (this.token.get(index).getLexema().equals("print")) {
-                print();
-            } else if (this.token.get(index).getLexema().equals("if")) {
-                hayIf = true;
-                condicionIf();
-            } else if (this.token.get(index).getLexema().equals("else")) {
-
-                if (hayIf || hayElif) {
+                } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                     index++;
-                    hayIf = false;
-                    hayElif = false;
-                    if (this.token.get(index).getLexema().equals(":")) {
+                    syntaxAnalyer();
+
+                } else if (this.token.get(index).getLexema().equals("print")) {
+                    print();
+                } else if (this.token.get(index).getLexema().equals("if")) {
+                    hayIf = true;
+                    condicionIf();
+                } else if (this.token.get(index).getLexema().equals("else")) {
+
+                    if (hayIf || hayElif) {
                         index++;
-                        syntaxAnalyer();
+                        hayIf = false;
+                        hayElif = false;
+                        if (this.token.get(index).getLexema().equals(":")) {
+                            index++;
+                            syntaxAnalyer();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                            index += 2;
+                            syntaxAnalyer();
+
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
                         index += 2;
                         syntaxAnalyer();
 
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-                    index += 2;
-                    syntaxAnalyer();
+                } else if (this.token.get(index).getLexema().equals("elif")) {
+                    if (hayIf) {
+                        hayElif = true;
+                        condicionIf();
 
-                }
-            } else if (this.token.get(index).getLexema().equals("elif")) {
-                if (hayIf) {
-                    hayElif = true;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                        index += 2;
+                        syntaxAnalyer();
+
+                    }
+
+                    //AQUI VA EL METODO PARA RECONOCER LA SENTENCIA ELIF
+                } else if (this.token.get(index).getLexema().equals("while")) {
+                    //aqui va todo lo del while:
                     condicionIf();
+                } else if (this.token.get(index).getLexema().equals("for")) {
+                    cicloFor();
 
-                } else {
-                    JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-                    index += 2;
+                } else if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
+                    indentado();
                     syntaxAnalyer();
-
                 }
-
-                //AQUI VA EL METODO PARA RECONOCER LA SENTENCIA ELIF
-            } else if (this.token.get(index).getLexema().equals("while")) {
-                //aqui va todo lo del while:
-                condicionIf();
-            } else if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                indentado();
-                syntaxAnalyer();
             }
-        }
 
+        } catch (IndexOutOfBoundsException e) {
+
+        }
     }
 
     public void comentAnalyzer() {
@@ -813,14 +820,7 @@ public class Sintaxis {
 
                             prueba += token.get(index).getLexema();
                             index++;
-                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                                prueba += token.get(index).getLexema();
-                                index++;
-                            }
-                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                                prueba += token.get(index).getLexema();
-                                index++;
-                            }
+                            indentado();
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                                 JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
 
@@ -848,10 +848,7 @@ public class Sintaxis {
         index++;
         //this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
         if (index < token.size()) {
-            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                index++;
-
-            }
+            indentado();
             if (this.token.get(index).getToken().equals(TypeToken.COM)) {
                 index++;
 
@@ -918,8 +915,8 @@ public class Sintaxis {
 
                         }
                     } else {
+                        index++;
                         JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
-
                     }
                 } else if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
                     opCompIf();
@@ -962,6 +959,42 @@ public class Sintaxis {
             conteoIndentado++;
         }
 
+    }
+
+    public void cicloFor() {
+        index++;
+        indentado();
+        if (token.get(index).getToken().equals(TypeToken.ID)) {
+            index++;
+        }
+        indentado();
+        if (token.get(index).getLexema().equals("in")) {
+            index++;
+        }
+        indentado();
+        if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getLexema().equals("range")) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals("(")) {
+                index++;
+            }
+            indentado();
+            if (token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                index++;
+            }
+            indentado();
+            if (token.get(index).getLexema().equals(")")) {
+            index++;
+        }
+            
+        }
+
+        indentado();
+        if (token.get(index).getLexema().equals(":")) {
+            index++;
+        }
+        indentado();
+        syntaxAnalyer();
     }
 
     public void opCompIf() {
