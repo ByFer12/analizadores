@@ -62,7 +62,7 @@ public class Analizer extends javax.swing.JFrame {
             this.title.setText("Errores Lexicos");
             Object[] ob = new Object[5];
             for (int i = 0; i < tokens.size(); i++) {
-                if (tokens.get(i).getToken() == TypeToken.ERRORS) {
+                if (tokens.get(i).getToken() == TypeToken.ERR) {
 
                     ob[0] = tokens.get(i).getToken();
                     ob[1] = tokens.get(i).getNombre();
@@ -78,7 +78,7 @@ public class Analizer extends javax.swing.JFrame {
             title.setText("Tokens Reconocidos");
             Object[] ob = new Object[5];
             for (int i = 0; i < tokens.size(); i++) {
-                if ((tokens.get(i).getToken() != TypeToken.ERRORS)) {
+                if ((tokens.get(i).getToken() != TypeToken.ERR)) {
                     ob[0] = tokens.get(i).getToken();
                     ob[1] = tokens.get(i).getNombre();
                     ob[2] = tokens.get(i).getLexema();
@@ -106,21 +106,21 @@ public class Analizer extends javax.swing.JFrame {
         SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
         for (Token tk : tokens) {
             SimpleAttributeSet estilo = new SimpleAttributeSet();
-            if ((tk.getToken() == TypeToken.OP_ARITMETIC) || (tk.getToken() == TypeToken.OP_COMPARACION)||(tk.getToken() == TypeToken.OP_ASIGN)) {
+            if ((tk.getToken() == TypeToken.OP_ARIT) || (tk.getToken() == TypeToken.OP_COMP)||(tk.getToken() == TypeToken.OP_AS)) {
                 StyleConstants.setForeground(estilo, Color.CYAN);
 
-            }else if(tk.getToken()==TypeToken.KEY_WORD){
+            }else if(tk.getToken()==TypeToken.KY_WD){
                 StyleConstants.setForeground(estilo, Color.magenta);
-            }else if(tk.getToken()==TypeToken.CONST){
+            }else if(tk.getToken()==TypeToken.CONS){
                 StyleConstants.setForeground(estilo, Color.ORANGE);
-            }else if(tk.getToken()==TypeToken.COMENTARIO){
+            }else if(tk.getToken()==TypeToken.COM){
                 StyleConstants.setForeground(estilo, Color.GRAY);
                 
-            }else if(tk.getToken()==TypeToken.OTROS){
+            }else if(tk.getToken()==TypeToken.OT){
                 StyleConstants.setForeground(estilo, Color.green);
             }else if(tk.getToken()==TypeToken.ID){
                 StyleConstants.setForeground(estilo, Color.BLACK);
-            }else if(tk.getToken()==TypeToken.ERRORS){
+            }else if(tk.getToken()==TypeToken.ERR){
                  StyleConstants.setForeground(estilo, Color.red);
             }
             try {
