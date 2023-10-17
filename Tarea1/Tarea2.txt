@@ -1,0 +1,35 @@
+DADA LA SIGUIENTE GRAMATICA DEPENDIENTE DE CONTEXTO
+
+1.  s --> aSb
+2.  S --> X
+3.  X --> bXc
+4.  X --> Y
+5.  Y --> cYd
+6.  Y --> ε
+
+DETERMINAR SI LAS SIGUIENTES CADENAS PERTENECEN AL LENGUAJE GENERADO POR ESTA GRAMATICA:
+i--  abcd
+ii--  aabbcc
+iii--  aaabbbcccddd
+
+i)	1----aSb
+	2----aXb
+	3----abXcb
+	4----abYcb
+	5----abεcb ----> abcb No pertenece 
+	
+ii)	1----aSb
+	1----aaSb
+	2----aaXb
+	3----aabXcb
+	3----aabbXccb
+	4----aabbYccb
+	6----aabbεccb ---> aabbccb No pertenece ya que no quedo igual	
+
+iii)    1----aSb
+	1----aaSbb
+	1----aaaSbbb  ----> No pertenece a la gramatica
+
+
+
+
