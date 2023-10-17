@@ -20,6 +20,7 @@ public enum TypeToken {
     OP_LOG,
     BOOL,
     OP_RE_AS,
-    ENTERO
+    ENTERO,
+    
     
 }

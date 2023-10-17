@@ -1,10 +1,8 @@
 package analizador_lexico.analyzer;
 
 import analizador_lexico.enums.TypeToken;
-import analizador_lexico.errors.ErrorSyntaxIndexOut;
 import java.util.ArrayList;
 import analizador_lexico.symbol_table.SymbolTable;
-import java.util.function.ToLongFunction;
 import javax.swing.JOptionPane;
 
 public class Sintaxis {
@@ -179,11 +177,11 @@ public class Sintaxis {
             if (token.get(index).getLexema().equals("(")) {
                 index++;
                 indentado();
-                if(token.get(index).getLexema().equals("*")){
+                if (token.get(index).getLexema().equals("*")) {
                     index++;
                     indentado();
                 }
-                
+
                 if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     index++;
                     indentado();
@@ -331,7 +329,6 @@ public class Sintaxis {
                     operadorLogicoNot(nombreVar);
 
                 } else {
-                    System.out.println("Error sintaxis de tipo de dato token: " + index);
                 }
             } else if (this.token.get(index).getToken().equals(TypeToken.OP_RE_AS)) {
                 //Aqui va operador de reasignacion
@@ -342,10 +339,8 @@ public class Sintaxis {
                 }
 
             } else {
-                System.out.println("Error de sintaxis falta el simbolo igual token: " + index);
             }
         } else {
-            System.out.println("Error de sintaxis no declaro variable o identificador token: " + index);
         }
     }
 
@@ -359,7 +354,6 @@ public class Sintaxis {
         try {
 
             while (!this.token.get(index).getLexema().equals("}")) {
-                System.out.println("Estoy dentro del while de diccionario");
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
                     index++;
@@ -435,7 +429,6 @@ public class Sintaxis {
                 this.sybolTable.agregarSimbolo(nombreVar, "Lista", "Lista");
             }
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Error en la sintaxis de excepcion");
         }
         index++;
         this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
@@ -471,7 +464,6 @@ public class Sintaxis {
         try {
 
             while (!this.token.get(index).getLexema().equals("}")) {
-                System.out.println("Estoy dentro del while de diccionario");
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
                     index++;
@@ -552,7 +544,6 @@ public class Sintaxis {
             }
 
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Error en la sintaxis de excepcion");
         }
         index++;
         //this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
@@ -603,6 +594,7 @@ public class Sintaxis {
         this.sybolTable.agregarSimbolo(nombre, tipo, valorVariable);
 
     }
+
 
     public void opReAsignacion(String nombreVar) {
         index++;
@@ -676,7 +668,6 @@ public class Sintaxis {
         try {
 
             while (!this.token.get(index).getLexema().equals("]")) {
-                System.out.println("Estoy dentro del while");
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
                     index++;
@@ -723,7 +714,6 @@ public class Sintaxis {
                 this.sybolTable.agregarSimbolo(nombreVar, "Lista", "Lista");
             }
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Error en la sintaxis de excepcion");
         }
         index++;
         this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
@@ -933,7 +923,6 @@ public class Sintaxis {
                 }
                 try {
                     while (!this.token.get(index).getLexema().equals(")")) {
-                        System.out.println("Dentro del while print");
                         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                             prueba += token.get(index).getLexema();
                             index++;
@@ -960,7 +949,6 @@ public class Sintaxis {
                             }
                         }
                     }
-                    System.out.println("Palabra correcta");
                 } catch (IndexOutOfBoundsException e) {
 
                 }
@@ -1024,7 +1012,6 @@ public class Sintaxis {
                                 index++;
                                 conteoIndentado++;
                                 indentado();
-                                System.out.println("Indentado registrado");
                                 if (this.token.get(index).getToken().equals(TypeToken.ID)) {
                                     idAnalyzer();
                                 } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
@@ -1076,7 +1063,6 @@ public class Sintaxis {
 
     public void indentado() {
         while (index < token.size() && token.get(index).getToken().equals(TypeToken.SPACE)) {
-            System.out.println("Espacio");
             index++;
             conteoIndentado++;
         }
