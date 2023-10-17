@@ -1,4 +1,3 @@
-
 package analizador_lexico;
 
 import analizador_lexico.analyzer.Token;
