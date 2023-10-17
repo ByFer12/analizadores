@@ -4,11 +4,12 @@ import analizador_lexico.enums.TypeToken;
 import analizador_lexico.errors.ErrorSyntaxIndexOut;
 import java.util.ArrayList;
 import analizador_lexico.symbol_table.SymbolTable;
+import java.util.function.ToLongFunction;
 import javax.swing.JOptionPane;
 
 public class Sintaxis {
 
-    private boolean hayIf = false, hayElif = false;
+    private boolean hayIf = false, hayElif = false, hayFor = false, hayDef = false;
     private boolean haySpace = false;
     private ArrayList<Token> token;
     private int index = 0;
@@ -27,7 +28,12 @@ public class Sintaxis {
             if (index < token.size()) {
                 if (this.token.get(index).getToken().equals(TypeToken.ID)) {
                     idAnalyzer();
+                } else if (this.token.get(index).getLexema().equals("break")) {
+                    index++;
+                    syntaxAnalyer();
+
                 } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
+
                     comentAnalyzer();
 
                 } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
@@ -41,7 +47,7 @@ public class Sintaxis {
                     condicionIf();
                 } else if (this.token.get(index).getLexema().equals("else")) {
 
-                    if (hayIf || hayElif) {
+                    if (hayIf || hayElif || hayFor) {
                         index++;
                         hayIf = false;
                         hayElif = false;
@@ -79,6 +85,17 @@ public class Sintaxis {
                 } else if (this.token.get(index).getLexema().equals("for")) {
                     cicloFor();
 
+                } else if (token.get(index).getLexema().equals("def")) {
+                    hayDef = true;
+                    index++;
+                    indentado();
+                    funcionDef();
+                } else if (token.get(index).getLexema().equals("return")) {
+                    index++;
+                    indentado();
+                    espacioReturn();
+                    syntaxAnalyer();
+
                 } else if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     indentado();
                     syntaxAnalyer();
@@ -97,6 +114,113 @@ public class Sintaxis {
         }
     }
 
+    public void espacioReturn() {
+        if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+            index++;
+
+            indentado();
+            if (token.get(index).getToken().equals(TypeToken.OP_ARIT)) {
+                index++;
+                indentado();
+                if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                    index++;
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error de sintaxis, no tiene el operando, liena: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Error de sintaxis, no tiene operador aritmetico, linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+
+            }
+        } else if (token.get(index).getToken().equals(TypeToken.CONS)) {
+            index++;
+        } else if (token.get(index).getLexema().equals("len")) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals("(")) {
+                index++;
+                indentado();
+                if (token.get(index).getToken().equals(TypeToken.ID)) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getLexema().equals(")")) {
+                        index++;
+
+                    }
+                }
+
+            }
+
+        } else if (token.get(index).getLexema().equals("list")) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals("(")) {
+                index++;
+                indentado();
+                if (token.get(index).getToken().equals(TypeToken.ID)) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getLexema().equals(")")) {
+                        index++;
+
+                    }
+                }
+
+            }
+        }
+    }
+
+    public void funcionDef() {
+        if (token.get(index).getToken().equals(TypeToken.ID)) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals("(")) {
+                index++;
+                indentado();
+                if(token.get(index).getLexema().equals("*")){
+                    index++;
+                    indentado();
+                }
+                
+                if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getLexema().equals(",")) {
+                        index++;
+                        indentado();
+                        if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                            index++;
+                            indentado();
+                            if (token.get(index).getLexema().equals(")")) {
+                                index++;
+                                if (token.get(index).getLexema().equals(":")) {
+                                    index++;
+                                    syntaxAnalyer();
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+                if (token.get(index).getLexema().equals(")")) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getLexema().equals(":")) {
+                        index++;
+                        syntaxAnalyer();
+
+                    }
+
+                }
+
+            }
+        }
+
+    }
+
     public void idAnalyzer() {
         if (this.token.get(index).getToken().equals(TypeToken.ID)) {
             String nombreVar = this.token.get(index).getLexema();
@@ -110,7 +234,7 @@ public class Sintaxis {
                     index++;
                 }
 
-                if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.BOOL) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.BOOL) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
                     String tipoDato = token.get(index).getToken().name();
                     String valorVariable = token.get(index).getLexema();
                     index++;
@@ -463,7 +587,7 @@ public class Sintaxis {
         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
             index++;
         }
-        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+        if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
             valorVariable += token.get(index).getLexema();
             index++;
             if (index < token.size()) {
@@ -604,12 +728,7 @@ public class Sintaxis {
         index++;
         this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
         if (index < token.size()) {
-            if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                index++;
-                syntaxAnalyer();
-            } else if (token.get(index).getToken().equals(TypeToken.ID)) {
-                syntaxAnalyer();
-            }
+            syntaxAnalyer();
         }
     }
 
@@ -809,6 +928,9 @@ public class Sintaxis {
             if (this.token.get(index).getLexema().equals("(")) {
                 prueba += token.get(index).getLexema();
                 index++;
+                if (token.get(index).getLexema().equals("f")) {
+                    index++;
+                }
                 try {
                     while (!this.token.get(index).getLexema().equals(")")) {
                         System.out.println("Dentro del while print");
@@ -962,6 +1084,7 @@ public class Sintaxis {
     }
 
     public void cicloFor() {
+        hayFor = true;
         index++;
         indentado();
         if (token.get(index).getToken().equals(TypeToken.ID)) {
@@ -981,12 +1104,36 @@ public class Sintaxis {
             indentado();
             if (token.get(index).getToken().equals(TypeToken.ENTERO)) {
                 index++;
+                indentado();
+                if (token.get(index).getLexema().equals(",")) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                        index++;
+                        indentado();
+                        if (token.get(index).getLexema().equals(")")) {
+                            index++;
+                            if (token.get(index).getLexema().equals(":")) {
+                                index++;
+                                syntaxAnalyer();
+                            }
+
+                        }
+                    }
+                }
+
             }
-            indentado();
             if (token.get(index).getLexema().equals(")")) {
-            index++;
-        }
-            
+                index++;
+                indentado();
+                if (token.get(index).getLexema().equals(":")) {
+                    index++;
+                    syntaxAnalyer();
+
+                }
+
+            }
+
         }
 
         indentado();

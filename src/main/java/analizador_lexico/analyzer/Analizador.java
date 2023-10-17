@@ -20,7 +20,7 @@ public class Analizador {
     String entero = "-?\\d+"; //ya esta
     String decimal = "-?\\d+(\\.\\d*)?|-?\\.\\d+"; //ya esta casi
     String coment = "#.*"; //esta ya esta
-    String keyWord = "(if|else|for|while|as|assert|break|class|continue|def|range|del|elif|except|finally|from|global|import|in|is|lambda|None|nonlocal|pass|raise|return|try|with|yield|print)";
+    String keyWord = "(if|else|for|while|len|as|list|assert|break|class|continue|def|range|del|elif|except|finally|from|global|import|in|is|lambda|None|nonlocal|pass|raise|return|try|with|yield|print)";
     String opLog = "(and|or|not)";
     String bool = "(True|False)";
     String cadena = "\"[^\"]*\"|'[^']*'"; //ya esta
