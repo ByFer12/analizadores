@@ -14,6 +14,9 @@ public class Sintaxis {
     private SymbolTable sybolTable;
     boolean pasa = false;
     private int conteoIndentado = 0;
+    String err;
+    public ArrayList<String> errores = new ArrayList<>();
+    public boolean syntaxErr = false;
 
     public Sintaxis(ArrayList<Token> token) {
         this.token = token;
@@ -26,6 +29,7 @@ public class Sintaxis {
             if (index < token.size()) {
                 if (this.token.get(index).getToken().equals(TypeToken.ID)) {
                     idAnalyzer();
+                    syntaxAnalyer();
                 } else if (this.token.get(index).getLexema().equals("break")) {
                     index++;
                     syntaxAnalyer();
@@ -33,6 +37,7 @@ public class Sintaxis {
                 } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
 
                     comentAnalyzer();
+                    syntaxAnalyer();
 
                 } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                     index++;
@@ -40,9 +45,11 @@ public class Sintaxis {
 
                 } else if (this.token.get(index).getLexema().equals("print")) {
                     print();
+                    syntaxAnalyer();
                 } else if (this.token.get(index).getLexema().equals("if")) {
                     hayIf = true;
                     condicionIf();
+                    syntaxAnalyer();
                 } else if (this.token.get(index).getLexema().equals("else")) {
 
                     if (hayIf || hayElif || hayFor) {
@@ -51,15 +58,20 @@ public class Sintaxis {
                         hayElif = false;
                         if (this.token.get(index).getLexema().equals(":")) {
                             index++;
+
                             syntaxAnalyer();
                         } else {
-                            JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-                            index += 2;
+                            syntaxErr = true;
+                            err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                            errores.add(err);
+                            //index += 2;
                             syntaxAnalyer();
 
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                        errores.add(err);
                         index += 2;
                         syntaxAnalyer();
 
@@ -68,9 +80,12 @@ public class Sintaxis {
                     if (hayIf) {
                         hayElif = true;
                         condicionIf();
+                        syntaxAnalyer();
 
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis, ha escrito un else sin el if en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                        errores.add(err);
                         index += 2;
                         syntaxAnalyer();
 
@@ -80,14 +95,16 @@ public class Sintaxis {
                 } else if (this.token.get(index).getLexema().equals("while")) {
                     //aqui va todo lo del while:
                     condicionIf();
+                    syntaxAnalyer();
                 } else if (this.token.get(index).getLexema().equals("for")) {
                     cicloFor();
-
+                    syntaxAnalyer();
                 } else if (token.get(index).getLexema().equals("def")) {
                     hayDef = true;
                     index++;
                     indentado();
                     funcionDef();
+                    syntaxAnalyer();
                 } else if (token.get(index).getLexema().equals("return")) {
                     index++;
                     indentado();
@@ -103,33 +120,49 @@ public class Sintaxis {
         } catch (IndexOutOfBoundsException e) {
 
         }
+
     }
 
     public void comentAnalyzer() {
         if (this.token.get(index).getToken().equals(TypeToken.COM)) {
             index++;
-            syntaxAnalyer();
+
         }
     }
 
     public void espacioReturn() {
         if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
             index++;
-
             indentado();
             if (token.get(index).getToken().equals(TypeToken.OP_ARIT)) {
                 index++;
                 indentado();
                 if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     index++;
+                    indentado();
+                    if (token.get(index).getToken().equals(TypeToken.OP_COMP)) {
+                        index++;
+                        indentado();
+                        if (token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                            index++;
+
+                        } else {
+                            index++;
+                            syntaxErr = true;
+                            err = "Error de sintaxis en liena: " + (token.get(index).getFila() - 2) + " y columna: " + (token.get(index - 2).getColumna());
+                            errores.add(err);
+                            indentado();
+
+                        }
+
+                    }
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Error de sintaxis, no tiene el operando, liena: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-
+                    index++;
+                    syntaxErr = true;
+                    err = "Error de sintaxis en liena: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                    errores.add(err);
                 }
-
-            } else {
-                JOptionPane.showMessageDialog(null, "Error de sintaxis, no tiene operador aritmetico, linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
 
             }
         } else if (token.get(index).getToken().equals(TypeToken.CONS)) {
@@ -146,9 +179,24 @@ public class Sintaxis {
                     if (token.get(index).getLexema().equals(")")) {
                         index++;
 
+                    } else {
+                        index++;
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                        errores.add(err);
                     }
+                } else {
+                    index++;
+                    syntaxErr = true;
+                    err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                    errores.add(err);
                 }
 
+            } else {
+                index++;
+                syntaxErr = true;
+                err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                errores.add(err);
             }
 
         } else if (token.get(index).getLexema().equals("list")) {
@@ -163,60 +211,31 @@ public class Sintaxis {
                     if (token.get(index).getLexema().equals(")")) {
                         index++;
 
+                    } else {
+                        index++;
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                        errores.add(err);
                     }
+                } else {
+                    index++;
+                    syntaxErr = true;
+                    err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                    errores.add(err);
                 }
 
-            }
-        }
-    }
-
-    public void funcionDef() {
-        if (token.get(index).getToken().equals(TypeToken.ID)) {
-            index++;
-            indentado();
-            if (token.get(index).getLexema().equals("(")) {
+            } else {
                 index++;
-                indentado();
-                if (token.get(index).getLexema().equals("*")) {
-                    index++;
-                    indentado();
-                }
-
-                if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
-                    index++;
-                    indentado();
-                    if (token.get(index).getLexema().equals(",")) {
-                        index++;
-                        indentado();
-                        if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
-                            index++;
-                            indentado();
-                            if (token.get(index).getLexema().equals(")")) {
-                                index++;
-                                if (token.get(index).getLexema().equals(":")) {
-                                    index++;
-                                    syntaxAnalyer();
-                                }
-
-                            }
-                        }
-                    }
-
-                }
-                if (token.get(index).getLexema().equals(")")) {
-                    index++;
-                    indentado();
-                    if (token.get(index).getLexema().equals(":")) {
-                        index++;
-                        syntaxAnalyer();
-
-                    }
-
-                }
-
+                syntaxErr = true;
+                err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+                errores.add(err);
             }
+        } else {
+            index++;
+            syntaxErr = true;
+            err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna());
+            errores.add(err);
         }
-
     }
 
     public void idAnalyzer() {
@@ -228,9 +247,7 @@ public class Sintaxis {
             }
             if (this.token.get(index).getToken().equals(TypeToken.OP_AS)) {
                 index++;
-                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                    index++;
-                }
+                indentado();
 
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.BOOL) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
                     String tipoDato = token.get(index).getToken().name();
@@ -238,10 +255,7 @@ public class Sintaxis {
                     index++;
                     if (index < token.size()) {
 
-                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                            index++;
-
-                        }
+                        indentado();
                         if (this.token.get(index).getToken().equals(TypeToken.COM)) {
                             index++;
 
@@ -254,6 +268,12 @@ public class Sintaxis {
                         if (this.token.get(index).getToken().equals(TypeToken.OP_ARIT)) {
                             //OPERADOR ARITMETICO
                             opAritmetico(nombreVar, tipoDato, valorVariable);
+
+                        } else if (this.token.get(index).getLexema().equals("(")) {
+                            index++;
+                            tipoDato = "funcion";
+                            valorVariable += token.get(index).getLexema();
+                            operadorFuncion(nombreVar, tipoDato, valorVariable);
 
                         } else if (this.token.get(index).getLexema().equals("is")) {
 
@@ -293,9 +313,11 @@ public class Sintaxis {
 
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                                 index++;
-                                syntaxAnalyer();
+
                             } else {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                                errores.add(err);
                                 if (token.get(index).getToken().equals(TypeToken.OP_AS)) {
                                     index += 4;
                                 } else {
@@ -303,14 +325,10 @@ public class Sintaxis {
                                     index++;
                                     index++;
                                 }
-                                syntaxAnalyer();
+
                             }
                         }
                     }
-//
-//                    if (index < token.size()) {
-//                        syntaxAnalyer();
-//                    }
 
                     //Aqui va la logica para una lista
                 } else if (this.token.get(index).getToken().equals(TypeToken.OT) && this.token.get(index).getLexema().equals("[")) {
@@ -344,6 +362,53 @@ public class Sintaxis {
         }
     }
 
+    public void operadorFuncion(String nombreVar, String tipo, String valor) {
+        indentado();
+        if (this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+            valor += token.get(index).getLexema();
+            index++;
+            indentado();
+            if (this.token.get(index).getLexema().equals(",")) {
+                valor += token.get(index).getLexema();
+                index++;
+                indentado();
+                if (this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                    valor += token.get(index).getLexema();
+                    index++;
+                    indentado();
+                    if (this.token.get(index).getLexema().equals(")")) {
+                        valor += token.get(index).getLexema();
+                        index++;
+                        indentado();
+                    } else {
+                        index++;
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 2).getFila()) + " y columna: " + (token.get(index - 2).getColumna());
+                        errores.add(err);
+                    }
+                } else {
+                    index++;
+                    syntaxErr = true;
+                    err = "Error de sintaxis en linea: " + (token.get(index - 2).getFila()) + " y columna: " + (token.get(index - 2).getColumna());
+                    errores.add(err);
+                }
+
+            } else {
+                index++;
+                syntaxErr = true;
+                err = "Error de sintaxis en linea: " + (token.get(index - 2).getFila()) + " y columna: " + (token.get(index - 2).getColumna());
+                errores.add(err);
+            }
+        } else {
+            index++;
+            syntaxErr = true;
+            err = "Error de sintaxis en linea: " + (token.get(index - 2).getFila()) + " y columna: " + (token.get(index - 2).getColumna());
+            errores.add(err);
+        }
+
+        this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
+    }
+
     public void diccionario(String nombreVar, String tipo, String valor) {
         boolean enviarTabla = false;
         index++;
@@ -352,7 +417,7 @@ public class Sintaxis {
             index++;
         }
         try {
-
+            int iterador = 0;
             while (!this.token.get(index).getLexema().equals("}")) {
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
@@ -361,14 +426,23 @@ public class Sintaxis {
                         valor += this.token.get(index).getLexema();
                         index++;
                     } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        String err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna());
+                        errores.add(err);
+                        enviarTabla = true;
+                        break;
+                    }
+                    iterador++;
+                    if (iterador == 20) {
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna());
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
                     if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna());
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
@@ -393,8 +467,9 @@ public class Sintaxis {
                                 valor += this.token.get(index).getLexema();
                                 index++;
                                 if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                    JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-
+                                    syntaxErr = true;
+                                    err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                                    errores.add(err);
                                     enviarTabla = true;
                                     break;
                                 }
@@ -406,14 +481,16 @@ public class Sintaxis {
                                 valor += this.token.get(index).getLexema();
                                 index++;
                             } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
                             if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
@@ -462,8 +539,9 @@ public class Sintaxis {
             index++;
         }
         try {
-
+            int iterador = 0;
             while (!this.token.get(index).getLexema().equals("}")) {
+                iterador++;
                 if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valor += this.token.get(index).getLexema();
                     index++;
@@ -471,14 +549,21 @@ public class Sintaxis {
                         valor += this.token.get(index).getLexema();
                         index++;
                     } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
+                    if (iterador == 20) {
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                        errores.add(err);
+                        break;
+                    }
                     if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
@@ -503,8 +588,9 @@ public class Sintaxis {
                                 valor += this.token.get(index).getLexema();
                                 index++;
                                 if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                    JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-
+                                    syntaxErr = true;
+                                    err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                                    errores.add(err);
                                     enviarTabla = true;
                                     break;
                                 }
@@ -516,20 +602,23 @@ public class Sintaxis {
                                 valor += this.token.get(index).getLexema();
                                 index++;
                             } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
                             if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
                             if (this.token.get(index).getLexema().equals("]")) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
@@ -537,6 +626,7 @@ public class Sintaxis {
                             if (this.token.get(index).getLexema().equals("}")) {
                                 valor += this.token.get(index).getLexema();
                             }
+
                         }
                     }
 
@@ -594,31 +684,23 @@ public class Sintaxis {
         this.sybolTable.agregarSimbolo(nombre, tipo, valorVariable);
 
     }
-
+//Aqui he modificado y he quirado el if de salto de space y com encerrado en un size
 
     public void opReAsignacion(String nombreVar) {
         index++;
-        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-            index++;
-        }
+        indentado();
         if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
             String tipoDato = token.get(index).getToken().name();
             String valorVariable = token.get(index).getLexema();
             index++;
             this.sybolTable.agregarSimbolo(nombreVar, tipoDato, valorVariable);
 
-            if (index < token.size()) {
-                if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                    index++;
-                    syntaxAnalyer();
-                }
-                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                    index++;
-                }
-                if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                    index++;
-                }
-            }
+        } else {
+            index++;
+            syntaxErr = true;
+            err = "Error de sintaxis en linea: " + (token.get(index - 2).getFila()) + " y columna: " + (token.get(index - 2).getColumna());
+            errores.add(err);
+
         }
     }
 
@@ -627,16 +709,11 @@ public class Sintaxis {
         index++;
         pasa = true;
 
-        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-            valorVariable += token.get(index).getLexema();
-            index++;
-        }
+        indentado();
         if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
             valorVariable += token.get(index).getLexema();
             index++;
-            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                index++;
-            }
+            indentado();
             if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
@@ -646,9 +723,7 @@ public class Sintaxis {
         } else if (this.token.get(index).getLexema().equals("not")) {
             valorVariable += token.get(index).getLexema();
             index++;
-            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                index++;
-            }
+            indentado();
             if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
@@ -664,6 +739,7 @@ public class Sintaxis {
         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
             valor += this.token.get(index).getLexema();
             index++;
+            indentado();
         }
         try {
 
@@ -675,14 +751,16 @@ public class Sintaxis {
                         valor += this.token.get(index).getLexema();
                         index++;
                     } else if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
                     if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1));
-
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index - 1).getFila()) + " y columna: " + (token.get(index - 1).getColumna() - 1);
+                        errores.add(err);
                         enviarTabla = true;
                         break;
                     }
@@ -695,13 +773,15 @@ public class Sintaxis {
 
                             index++;
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1));
-
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index).getColumna() - 1);
+                                errores.add(err);
                                 enviarTabla = true;
                                 break;
                             }
                             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                                 index++;
+                                indentado();
                             }
                         }
                     }
@@ -717,9 +797,6 @@ public class Sintaxis {
         }
         index++;
         this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
-        if (index < token.size()) {
-            syntaxAnalyer();
-        }
     }
 
     //OPERADORES DE ASIGNACION
@@ -729,6 +806,7 @@ public class Sintaxis {
 
         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
             index++;
+            indentado();
         }
         if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
             valorVariable += token.get(index).getLexema();
@@ -737,6 +815,7 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
+                indentado();
             }
             if (this.token.get(index).getToken().equals(TypeToken.OP_LOG)) {
                 valorVariable += token.get(index).getLexema();
@@ -744,6 +823,7 @@ public class Sintaxis {
                 if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     valorVariable += token.get(index).getLexema();
                     index++;
+                    indentado();
                 }
                 if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                     valorVariable += token.get(index).getLexema();
@@ -751,6 +831,7 @@ public class Sintaxis {
                     if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                         valorVariable += token.get(index).getLexema();
                         index++;
+                        indentado();
                     }
                     if (this.token.get(index).getToken().equals(TypeToken.OP_COMP)) {
                         valorVariable += token.get(index).getLexema();
@@ -758,10 +839,12 @@ public class Sintaxis {
                         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                             valorVariable += token.get(index).getLexema();
                             index++;
+                            indentado();
                         }
                         if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
                             valorVariable += token.get(index).getLexema();
                             index++;
+
                         }
                     }
                 }
@@ -828,15 +911,13 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
+                indentado();
 
             }
             if (this.token.get(index).getLexema().equals("in")) {
                 valorVariable += token.get(index).getLexema();
                 index++;
-                if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                    index++;
-
-                }
+                indentado();
                 if (this.token.get(index).getLexema().equals("[")) {
                     valorVariable += token.get(index).getLexema();
                     listas(nombreVar, tipoDato, valorVariable);
@@ -850,6 +931,7 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
+                indentado();
             }
             if (this.token.get(index).getLexema().equals("[")) {
                 valorVariable += token.get(index).getLexema();
@@ -865,6 +947,7 @@ public class Sintaxis {
         if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
             valorVariable += token.get(index).getLexema();
             index++;
+            indentado();
         }
         if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
             valorVariable += token.get(index).getLexema();
@@ -872,20 +955,24 @@ public class Sintaxis {
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
+                indentado();
             }
             if (this.token.get(index).getToken().equals(TypeToken.OP_COMP)) {
                 valorVariable += token.get(index).getLexema();
                 index++;
+
                 if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     index++;
+                    indentado();
                 }
-                if (this.token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ID)) {
 
                     valorVariable += token.get(index).getLexema();
                     index++;
                     if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                         valorVariable += token.get(index).getLexema();
                         index++;
+                        indentado();
                     }
                     if (this.token.get(index).getLexema().equals("else")) {
                         valorVariable += token.get(index).getLexema();
@@ -907,6 +994,7 @@ public class Sintaxis {
 
     //OPERADORES DE SALIDA PRINT
     public void print() {
+        int resta = 1;
         String prueba = "";
         if (this.token.get(index).getLexema().equals("print")) {
             prueba += token.get(index).getLexema();
@@ -921,32 +1009,31 @@ public class Sintaxis {
                 if (token.get(index).getLexema().equals("f")) {
                     index++;
                 }
+
                 try {
                     while (!this.token.get(index).getLexema().equals(")")) {
-                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                            prueba += token.get(index).getLexema();
-                            index++;
-                        }
+                        indentado();
+
                         if (this.token.get(index).getToken().equals(TypeToken.CONS) || this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID)) {
 
                             prueba += token.get(index).getLexema();
                             index++;
                             indentado();
                             if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
 
                                 break;
                             }
                             if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                                JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila()) + " y columna: " + (token.get(index - 1).getColumna()));
-
+                                resta = 0;
                                 break;
                             }
+
                             if (this.token.get(index).getLexema().equals("+") || this.token.get(index).getLexema().equals(",")) {
                                 prueba += token.get(index).getLexema();
                                 index++;
 
                             }
+
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
@@ -954,8 +1041,14 @@ public class Sintaxis {
                 }
             }
         }
-
-        index++;
+        if (this.token.get(index).getLexema().equals(")")) {
+            index++;
+        } else {
+            syntaxErr = true;
+            err = "Error de sintaxis en lineaaa: " + (token.get(index).getFila() - resta) + " y columna: " + (token.get(index - 1).getColumna());
+            errores.add(err);
+            //index++;
+        }
         //this.sybolTable.agregarSimbolo(nombreVar, tipo, valor);
         if (index < token.size()) {
             indentado();
@@ -966,15 +1059,89 @@ public class Sintaxis {
             if (index < token.size()) {
                 if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
                     index++;
-                    syntaxAnalyer();
-                } else if (token.get(index).getToken().equals(TypeToken.ID)) {
-                    syntaxAnalyer();
                 }
             }
         }
     }
 
+    //AQUI VA LA LOGICA DE LA FUNCION DEF
+    public void funcionDef() {
+        if (token.get(index).getToken().equals(TypeToken.ID)) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals("(")) {
+                index++;
+                indentado();
+                if (token.get(index).getLexema().equals("*")) {
+                    index++;
+                    indentado();
+                }
+
+                if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                    index++;
+                    indentado();
+                    if (token.get(index).getLexema().equals(",")) {
+                        index++;
+                        indentado();
+                        if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                            index++;
+                            indentado();
+                            if (token.get(index).getLexema().equals(",")) {
+                                index++;
+                                indentado();
+                            }
+                            if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getToken().equals(TypeToken.ENTERO)) {
+                                index++;
+                                indentado();
+                            }
+                            if (token.get(index).getLexema().equals(")")) {
+                                index++;
+                                if (token.get(index).getLexema().equals(":")) {
+                                    index++;
+                                    // syntaxAnalyer();
+                                } else {
+                                    syntaxErr = true;
+                                    err = "Error de sintaxis linea: " + (token.get(index).getFila() - 1) + " y columna: " + token.get(index - 1).getColumna();
+                                    errores.add(err);
+                                }
+
+                            } else {
+                                syntaxErr = true;
+                                err = "Error de sintaxis linea: " + token.get(index).getFila() + " y columna: " + token.get(index).getColumna();
+                                errores.add(err);
+                            }
+                        } else {
+                            syntaxErr = true;
+                            err = "Error de sintaxis linea: " + token.get(index).getFila() + " y columna: " + token.get(index).getColumna();
+                            errores.add(err);
+                        }
+                    } else if (token.get(index).getLexema().equals(")")) {
+                        index++;
+                        indentado();
+                        if (token.get(index).getLexema().equals(":")) {
+                            index++;
+                            // syntaxAnalyer();
+
+                        } else {
+                            syntaxErr = true;
+                            err = "Error de sintaxis linea: " + (token.get(index).getFila() - 1) + " y columna: " + token.get(index - 1).getColumna();
+                            errores.add(err);
+                        }
+
+                    } else {
+                        syntaxErr = true;
+                        err = "Error de sintaxis linear: " + (token.get(index).getFila()) + " y columna: " + token.get(index - 1).getColumna();
+                        errores.add(err);
+                    }
+
+                }
+
+            }
+        }
+
+    }
     //CONDICIONALES IF
+
     public void condicionIf() {
 
         try {
@@ -992,66 +1159,27 @@ public class Sintaxis {
                     if (this.token.get(index).getToken().equals(TypeToken.ID)) {
                         index++;
 
-                    }
-                    if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                        index++;
-
+                        indentado();
                     }
                     if (this.token.get(index).getLexema().equals(":")) {
                         index++;
-                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-
-                            index++;
-                        }
-                        if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                            index++;
-                        }
-                        if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                            index++;
-                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                                index++;
-                                conteoIndentado++;
-                                indentado();
-                                if (this.token.get(index).getToken().equals(TypeToken.ID)) {
-                                    idAnalyzer();
-                                } else if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                                    syntaxAnalyer();
-                                }
-
-                            } else {
-                                System.out.println("Error no tiene indentado");
-                            }
-
-                        }
+                        // syntaxAnalyer();
                     } else {
                         index++;
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 2).getColumna());
+                        errores.add(err);
                     }
                 } else if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
                     opCompIf();
                     if (this.token.get(index).getLexema().equals(":")) {
                         index++;
-                        if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                            index++;
-                        }
-                        if (this.token.get(index).getToken().equals(TypeToken.COM)) {
-                            index++;
-                        }
-                        if (this.token.get(index).getToken().equals(TypeToken.SALT)) {
-                            index++;
-                            if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
-                                index++;
-                                indentado();
-                                System.out.println("Indentado registrado");
-                                syntaxAnalyer();
-                            } else {
-                                System.out.println("Error no tiene indentado");
-                            }
-
-                        }
+                        //syntaxAnalyer();
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 1).getColumna()));
-
+                        index++;
+                        syntaxErr = true;
+                        err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 2).getColumna());
+                        errores.add(err);
                     }
 
                 }
@@ -1075,12 +1203,12 @@ public class Sintaxis {
         indentado();
         if (token.get(index).getToken().equals(TypeToken.ID)) {
             index++;
+            indentado();
         }
-        indentado();
         if (token.get(index).getLexema().equals("in")) {
             index++;
+            indentado();
         }
-        indentado();
         if (token.get(index).getToken().equals(TypeToken.ID) || token.get(index).getLexema().equals("range")) {
             index++;
             indentado();
@@ -1088,7 +1216,7 @@ public class Sintaxis {
                 index++;
             }
             indentado();
-            if (token.get(index).getToken().equals(TypeToken.ENTERO)) {
+            if (token.get(index).getToken().equals(TypeToken.ENTERO) || token.get(index).getToken().equals(TypeToken.ID)) {
                 index++;
                 indentado();
                 if (token.get(index).getLexema().equals(",")) {
@@ -1101,8 +1229,20 @@ public class Sintaxis {
                             index++;
                             if (token.get(index).getLexema().equals(":")) {
                                 index++;
-                                syntaxAnalyer();
+
+                            } else {
+                                index++;
+                                syntaxErr = true;
+                                err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 2).getColumna());
+                                errores.add(err);
+
                             }
+
+                        } else {
+                            index++;
+                            syntaxErr = true;
+                            err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 2).getColumna());
+                            errores.add(err);
 
                         }
                     }
@@ -1114,20 +1254,26 @@ public class Sintaxis {
                 indentado();
                 if (token.get(index).getLexema().equals(":")) {
                     index++;
-                    syntaxAnalyer();
 
                 }
 
             }
 
+        } else if (token.get(index).getToken().equals(TypeToken.ID)) {
+            index++;
+            indentado();
+            if (token.get(index).getLexema().equals(":")) {
+                index++;
+                indentado();
+            } else {
+                index++;
+                syntaxErr = true;
+                err = "Error de sintaxis en linea: " + (token.get(index).getFila() - 1) + " y columna: " + (token.get(index - 2).getColumna());
+                errores.add(err);
+            }
         }
 
-        indentado();
-        if (token.get(index).getLexema().equals(":")) {
-            index++;
-        }
-        indentado();
-        syntaxAnalyer();
+        //syntaxAnalyer();
     }
 
     public void opCompIf() {
@@ -1152,11 +1298,13 @@ public class Sintaxis {
             index++;
             if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                 index++;
+                indentado();
             }
             if (this.token.get(index).getToken().equals(TypeToken.ENTERO) || this.token.get(index).getToken().equals(TypeToken.ID) || this.token.get(index).getToken().equals(TypeToken.CONS)) {
                 index++;
                 if (this.token.get(index).getToken().equals(TypeToken.SPACE)) {
                     index++;
+                    indentado();
                 }
 
             }

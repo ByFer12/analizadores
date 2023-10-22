@@ -45,8 +45,8 @@ public class Analizador {
     Pattern otrosPattern = Pattern.compile(otros);
     Pattern indent = Pattern.compile(indentado);
 
-    int linea = 1;
-    int column = 1;
+   public int linea = 1;
+    public int column = 1;
 
     public void analizar(String input) {
         Matcher matcher = Pattern.compile(opComp+"|"+id + "|"+cadena+"|"+errorCadena+"|"+op_re_as+"|" + entero + "|"+opLog+"|" + decimal + "|" + coment + "|" + space + "|" + salto + "|" + keyWord + "|" + bool + "|" + opArit  + "|" + opAsig + "|" + otros + "|" + indentado).matcher(input);
@@ -133,5 +133,7 @@ public class Analizador {
 
 
     }
+    
+
 
 }

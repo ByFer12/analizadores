@@ -29,6 +29,7 @@ public class Analizer extends javax.swing.JFrame {
     Analizador analizador;
 
     Font font = new Font("Liberation Sans", Font.BOLD, 20);
+    Font font1 = new Font("Liberation Sans", Font.BOLD, 18);
     private int lineNumber;
     private int columnNumber;
     private Archive archivo;
@@ -41,6 +42,7 @@ public class Analizer extends javax.swing.JFrame {
     ArrayList<Integer> lineNumbers = new ArrayList<>();
     Sintaxis sy;
     NumeroLinea lineas;
+
     public Analizer() {
         initComponents();
         //modifyTextArea();
@@ -54,10 +56,9 @@ public class Analizer extends javax.swing.JFrame {
         modelTable.addColumn("Lexema");
         modelTable.addColumn("Linea");
         modelTable.addColumn("Columna");
-        lineas=new NumeroLinea(area_code);
+        lineas = new NumeroLinea(area_code);
         jScrollPane3.setRowHeaderView(lineas);
 
-        
     }
 
     public void printTable() {
@@ -65,7 +66,7 @@ public class Analizer extends javax.swing.JFrame {
         boolean isError = Analizador.isError;
         tokens = Analizador.tokens;
         //errors=Analizador.errores;
-          
+
         if (isError) {
             this.title.setText("Errores Lexicos");
             Object[] ob = new Object[5];
@@ -86,25 +87,25 @@ public class Analizer extends javax.swing.JFrame {
             title.setText("Tokens Reconocidos");
             Object[] ob = new Object[5];
             for (int i = 0; i < tokens.size(); i++) {
- 
+
                 if ((tokens.get(i).getToken() != TypeToken.ERR)) {
 
-                if ((tokens.get(i).getToken() != TypeToken.ERR)&&(tokens.get(i).getToken() != TypeToken.SALT)&&(tokens.get(i).getToken() != TypeToken.SPACE)) {
+                    if ((tokens.get(i).getToken() != TypeToken.ERR) && (tokens.get(i).getToken() != TypeToken.SALT) && (tokens.get(i).getToken() != TypeToken.SPACE)) {
 
-                    ob[0] = tokens.get(i).getToken();
-                    ob[1] = tokens.get(i).getNombre();
-                    ob[2] = tokens.get(i).getLexema();
-                    ob[3] = tokens.get(i).getFila();
-                    ob[4] = tokens.get(i).getColumna();
-                    modelTable.addRow(ob);
+                        ob[0] = tokens.get(i).getToken();
+                        ob[1] = tokens.get(i).getNombre();
+                        ob[2] = tokens.get(i).getLexema();
+                        ob[3] = tokens.get(i).getFila();
+                        ob[4] = tokens.get(i).getColumna();
+                        modelTable.addRow(ob);
+                    }
+
                 }
 
+                table_error_tokens.setModel(modelTable);
             }
-
-            table_error_tokens.setModel(modelTable);
+            Analizador.isError = false;
         }
-        Analizador.isError = false;
-    }
     }
 
     public void limpiar() {
@@ -114,42 +115,58 @@ public class Analizer extends javax.swing.JFrame {
         }
     }
 
+    public void infoSintaxis() {
+        if (sy.syntaxErr) {
+            String errore = "";
+            ArrayList<String> syntaxErr = sy.errores;
+            for (String err : syntaxErr) {
+                errore += err + "\n";
+            }
+            areaSyntax.setText(errore);
+            areaSyntax.setForeground(Color.RED);
+            areaSyntax.setFont(font1);
+        } else {
+            areaSyntax.setText("Ejecucion completada, sintaxis correcta");
+            areaSyntax.setForeground(Color.GREEN);
+            areaSyntax.setFont(font1);
+        }
+    }
+
     public void pintar() {
         StyledDocument doc = area_code.getStyledDocument();
         SimpleAttributeSet estiloPorDefecto = new SimpleAttributeSet();
         for (Token tk : tokens) {
             SimpleAttributeSet estilo = new SimpleAttributeSet();
-            if ((tk.getToken() == TypeToken.OP_ARIT) || (tk.getToken() == TypeToken.OP_COMP)||(tk.getToken() == TypeToken.OP_AS)) {
+            if ((tk.getToken() == TypeToken.OP_ARIT) || (tk.getToken() == TypeToken.OP_COMP) || (tk.getToken() == TypeToken.OP_AS)) {
                 StyleConstants.setForeground(estilo, Color.CYAN);
 
-            }else if(tk.getToken()==TypeToken.KY_WD){
+            } else if (tk.getToken() == TypeToken.KY_WD) {
                 StyleConstants.setForeground(estilo, Color.magenta);
-            }else if(tk.getToken()==TypeToken.CONS){
+            } else if (tk.getToken() == TypeToken.CONS) {
                 StyleConstants.setForeground(estilo, Color.ORANGE);
-            }else if(tk.getToken()==TypeToken.COM){
+            } else if (tk.getToken() == TypeToken.COM) {
                 StyleConstants.setForeground(estilo, Color.GRAY);
-                
-            }else if(tk.getToken()==TypeToken.OT){
+
+            } else if (tk.getToken() == TypeToken.OT) {
                 StyleConstants.setForeground(estilo, Color.green);
-            }else if(tk.getToken()==TypeToken.ID){
+            } else if (tk.getToken() == TypeToken.ID) {
                 StyleConstants.setForeground(estilo, Color.BLACK);
-            }else if(tk.getToken()==TypeToken.ERR){
-                 StyleConstants.setForeground(estilo, Color.red);
-            }else if(tk.getToken()==TypeToken.BOOL){
-                 StyleConstants.setForeground(estilo, Color.magenta);
-            }else if(tk.getToken()==TypeToken.OP_LOG){
-                 StyleConstants.setForeground(estilo, Color.magenta);
-            }else if(tk.getToken()==TypeToken.OP_RE_AS){
-                 StyleConstants.setForeground(estilo, Color.cyan);
-            }else if(tk.getToken()==TypeToken.OP_RE_AS){
-                 StyleConstants.setForeground(estilo, Color.orange);
-            }else if(tk.getToken()==TypeToken.ENTERO){
-                 StyleConstants.setForeground(estilo, Color.orange);
+            } else if (tk.getToken() == TypeToken.ERR) {
+                StyleConstants.setForeground(estilo, Color.red);
+            } else if (tk.getToken() == TypeToken.BOOL) {
+                StyleConstants.setForeground(estilo, Color.magenta);
+            } else if (tk.getToken() == TypeToken.OP_LOG) {
+                StyleConstants.setForeground(estilo, Color.magenta);
+            } else if (tk.getToken() == TypeToken.OP_RE_AS) {
+                StyleConstants.setForeground(estilo, Color.cyan);
+            } else if (tk.getToken() == TypeToken.OP_RE_AS) {
+                StyleConstants.setForeground(estilo, Color.orange);
+            } else if (tk.getToken() == TypeToken.ENTERO) {
+                StyleConstants.setForeground(estilo, Color.orange);
             }
             try {
-               
+
                 doc.insertString(doc.getLength(), tk.getLexema(), estilo);
-              
 
             } catch (BadLocationException e) {
                 e.printStackTrace();
@@ -182,9 +199,12 @@ public class Analizer extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         table_error_tokens = new javax.swing.JTable();
-        btn_save_Archivo = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        areaSyntax = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         area_code = new javax.swing.JTextPane();
+        btn_save_Archivo = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -281,35 +301,41 @@ public class Analizer extends javax.swing.JFrame {
             table_error_tokens.getColumnModel().getColumn(4).setHeaderValue("Columna");
         }
 
-        btn_save_Archivo.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        btn_save_Archivo.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/save.png")); // NOI18N
-        btn_save_Archivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_save_ArchivoActionPerformed(evt);
-            }
-        });
+        jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel2.setText("Analisis Sintactico");
+        jLabel2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        areaSyntax.setEditable(false);
+        jScrollPane4.setViewportView(areaSyntax);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 696, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(20, 20, 20))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(204, 204, 204))))
+                    .addComponent(jScrollPane4)))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
-                .addGap(18, 18, 18)
-                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14))
         );
 
         area_code.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
@@ -319,6 +345,14 @@ public class Analizer extends javax.swing.JFrame {
             }
         });
         jScrollPane3.setViewportView(area_code);
+
+        btn_save_Archivo.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        btn_save_Archivo.setIcon(new javax.swing.ImageIcon("/home/tuxrex/NetBeansProjects/analizador_lexico/src/main/java/analizador_lexico/img/save.png")); // NOI18N
+        btn_save_Archivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_save_ArchivoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout error_o_tokenLayout = new javax.swing.GroupLayout(error_o_token);
         error_o_token.setLayout(error_o_tokenLayout);
@@ -331,7 +365,8 @@ public class Analizer extends javax.swing.JFrame {
                         .addComponent(path_file, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btn_Archivo1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(98, 98, 98))
+                        .addGap(43, 43, 43)
+                        .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -366,13 +401,18 @@ public class Analizer extends javax.swing.JFrame {
                 .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24)
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(error_o_tokenLayout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(24, 24, 24)
+                                .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                        .addGap(5, 5, 5)
+                                        .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(run, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(error_o_tokenLayout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(btn_save_Archivo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(error_o_tokenLayout.createSequentialGroup()
                         .addGap(47, 47, 47)
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -389,7 +429,7 @@ public class Analizer extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                         .addGroup(error_o_tokenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 679, Short.MAX_VALUE))
                         .addGap(24, 24, 24))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, error_o_tokenLayout.createSequentialGroup()
                 .addGap(93, 93, 93)
@@ -571,6 +611,7 @@ public class Analizer extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_Archivo1ActionPerformed
 
     private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
+        areaSyntax.setText("");
         limpiar();
         String textCode = area_code.getText();
         Simbolo dimv;
@@ -578,18 +619,25 @@ public class Analizer extends javax.swing.JFrame {
         printTable();
         area_code.setText("");
         pintar();
-        sy=new Sintaxis(Analizador.tokens);
+        analizador.column=1;
+        analizador.linea=1;
+        sy = new Sintaxis(Analizador.tokens);
         sy.syntaxAnalyer();
-        SymbolTable tabla=sy.getSybolTable();
+        SymbolTable tabla = sy.getSybolTable();
 
-        String table="";
+        String table = "";
         for (Simbolo simbolo : tabla.obtenerTodosSimbolos()) {
-            table+=simbolo.getNombreVar()+
-            ", Tipo: " + simbolo.getTipoVar() +
-            ", Valor: " + simbolo.getValueVar()+"\n";
+            table += simbolo.getNombreVar()
+                    + ", Tipo: " + simbolo.getTipoVar()
+                    + ", Valor: " + simbolo.getValueVar() + "\n";
         }
         tokens.clear();
-        JOptionPane.showMessageDialog(null, "\tTABLA DE SIMBOLOS\n"+table);
+        infoSintaxis();
+        JOptionPane.showMessageDialog(null, "\tTABLA DE SIMBOLOS\n" + table);
+        if (sy.syntaxErr) {
+
+            sy.syntaxErr = false;
+        }
     }//GEN-LAST:event_runActionPerformed
 
     private void btn_save_ArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_save_ArchivoActionPerformed
@@ -630,6 +678,7 @@ public class Analizer extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextPane areaSyntax;
     private javax.swing.JTextPane area_code;
     private javax.swing.JButton btn_Archivo1;
     private javax.swing.JButton btn_save_Archivo;
@@ -638,6 +687,7 @@ public class Analizer extends javax.swing.JFrame {
     private javax.swing.JMenu go_graphics;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu3;
@@ -651,6 +701,7 @@ public class Analizer extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextField path_file;
     private javax.swing.JLabel position;
     private javax.swing.JButton run;
